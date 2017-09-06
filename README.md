@@ -25,8 +25,8 @@ To enable them in emacs use the following:
 (add-to-list 'custom-theme-load-path "~/.emacs.d/circadian/themes/")
 ```
 
-**Nyx**
+#### Nyx
 ![Nyx Theme](./themes/preview/nyx.png)
 
-**Hemera**
+#### Hemera
 ![Hemera Theme](./themes/preview/hemera.png)

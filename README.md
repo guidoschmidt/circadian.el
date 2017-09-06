@@ -1,4 +1,6 @@
+<div style="width: 100%;">
 ![Logo Circadian](logo.png)
+</div>
 
 # circadian
 > Theme-switching for Emacs based on daytime

@@ -24,3 +24,9 @@ To enable them in emacs use the following:
 ```elisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/circadian/themes/")
 ```
+
+**Nyx**
+![Nyx Theme](./themes/preview/nyx.png)
+
+**Hemera**
+![Hemera Theme](./themes/preview/hemera.png)

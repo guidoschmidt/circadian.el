@@ -1,8 +1,6 @@
-<div style="width: 100%;">
 ![Logo Circadian](logo.png)
-</div>
 
-# circadian
+# circadian.el
 > Theme-switching for Emacs based on daytime
 
 - Color temperature shifting and screen adaption based on daytime

@@ -1,4 +1,4 @@
-;;; package --- Summary
+;;; circadian --- Theme-switching for Emacs based on daytime
 ;;; Commentary:
 
 
@@ -55,15 +55,6 @@
     (load-theme-if-needed circadian-day-theme)))
 
 (add-hook 'after-change-major-mode-hook 'daytime-theme-hook)
-
-;; ---
-;; (setq nighttime-theme 'nyx)
-;; (print nighttime-theme)
-;; (setq daytime-theme 'hemera)
-;; (print daytime-theme)
-
-;; (print custom-enabled-themes)
-;; (setq custom-enabled-themes '())
 
 (provide 'circadian)
 ;;; circadian.el ends here

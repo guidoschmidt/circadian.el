@@ -1,5 +1,10 @@
 # circadian
-Theme-switching for emacs based on daytime
+> Theme-switching for Emacs based on daytime
+
+- Color temperature shifting and screen adaption based on daytime
+- [redshift](https://wiki.archlinux.org/index.php/Redshift)
+- [f.lux](https://justgetflux.com/news/pages/mac/)
+- [Lumen](https://github.com/anishathalye/lumen)
 
 ### Usage
 - Clone this repository into your `.emacs.d/` directory
@@ -30,3 +35,10 @@ To enable them in emacs use the following:
 
 #### Hemera
 ![Hemera Theme](./themes/preview/hemera.png)
+
+---
+
+### TODO
+- Better settings for daytimes (day/night), with minutes
+- Find another way to switch themes than using switch-buffer? Hook for clock?
+- Possible to interpolate-colors?

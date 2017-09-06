@@ -1,3 +1,5 @@
+![Logo Circadian](logo.png)
+
 # circadian
 > Theme-switching for Emacs based on daytime
 

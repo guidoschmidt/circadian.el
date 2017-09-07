@@ -1,6 +1,11 @@
 ;;; circadian --- Theme-switching for Emacs based on daytime
 ;;; Commentary:
 
+;; Author: Guido Schmidt
+;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
+;; URL: https://github.com/GuidoSchmidt/circadian
+;; Version: 0.1
+;; Keywords: circadian, themes
 
 ;;; Code:
 (defcustom circadian-day-theme 'hemera
@@ -14,18 +19,18 @@
   :group 'circadian)
 
 (defcustom circadian-night-start-hour 19
-  "Start night at this hour."
+  "Night theme is enabled after this time of day."
   :type 'integer
   :group 'circadian)
 
 (defcustom circadian-day-start-hour 7
-  "Start day at this hour."
+  "Day theme is enabled after this time of day."
   :type 'integer
   :group 'circadian)
 
 ;; ---
 (defun circadian-nighttime? ()
-  "Many."
+  "Check if night-theme needs to be enabled."
   (let ((current-hour (nth 2 (decode-time (date-to-time (current-time-string))))))
     (or (>= current-hour circadian-night-start-hour)
         (<= current-hour circadian-day-start-hour))))
@@ -49,11 +54,10 @@
 
 ;; Custom hook for determining the day time theme
 (defun daytime-theme-hook ()
-  "Endin."
+  "Hook to automatically load defined circadian themes."
   (if (circadian-nighttime?)
       (load-theme-if-needed circadian-night-theme)
     (load-theme-if-needed circadian-day-theme)))
-
 (add-hook 'after-change-major-mode-hook 'daytime-theme-hook)
 
 (provide 'circadian)

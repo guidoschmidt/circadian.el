@@ -1,9 +1,15 @@
-![Logo Circadian](logo.png)
-
 # circadian.el
 > Theme-switching for Emacs based on daytime
 
-- Color temperature shifting and screen adaption based on daytime
+![Logo Circadian](logo.png)
+
+### Why?
+Circadian tries to help reducing eye strain that may arise
+from difference of your display brightness and the
+surrounding light.
+
+Inspired by color temperature shifting tools and brightness
+adaption software like:
 - [redshift](https://wiki.archlinux.org/index.php/Redshift)
 - [f.lux](https://justgetflux.com/news/pages/mac/)
 - [Lumen](https://github.com/anishathalye/lumen)
@@ -25,17 +31,12 @@
 ---
 
 ### Themes
-Circadian features two themes: Nyx & Hemera, you can find them in the `themes` directory.
-To enable them in emacs use the following:
+Circadian features two themes: Nyx & Hemera
 
-```elisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/circadian/themes/")
-```
-
-#### Nyx
+#### Nyx (Nighttime)
 ![Nyx Theme](./themes/preview/nyx.png)
 
-#### Hemera
+#### Hemera (Daytime)
 ![Hemera Theme](./themes/preview/hemera.png)
 
 ---

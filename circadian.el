@@ -59,7 +59,7 @@
   (if (circadian-nighttime?)
       (load-theme-if-needed circadian-night-theme)
     (load-theme-if-needed circadian-day-theme)))
-(add-hook 'auto-save-hook 'circadian-theme-hook)
+(add-hook 'after-change-major-mode-hook 'circadian-theme-hook)
 (add-hook 'emacs-startup-hook 'circadian-theme-hook)
 
 ;;;###autoload

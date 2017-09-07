@@ -6,6 +6,7 @@
 ;; URL: https://github.com/GuidoSchmidt/circadian
 ;; Version: 0.1
 ;; Keywords: circadian, themes
+;; Package-Requires: ((emacs "24"))
 
 ;;; Code:
 (defcustom circadian-day-theme 'hemera
@@ -53,12 +54,19 @@
 (advice-add 'load-theme :after #'load-theme--restore-line-numbering)
 
 ;; Custom hook for determining the day time theme
-(defun daytime-theme-hook ()
+(defun circadian-theme-hook ()
   "Hook to automatically load defined circadian themes."
   (if (circadian-nighttime?)
       (load-theme-if-needed circadian-night-theme)
     (load-theme-if-needed circadian-day-theme)))
-(add-hook 'after-change-major-mode-hook 'daytime-theme-hook)
+(add-hook 'auto-save-hook 'circadian-theme-hook)
+(add-hook 'emacs-startup-hook 'circadian-theme-hook)
+
+;;;###autoload
+(when load-file-name
+  (add-to-list 'custom-theme-load-path
+               (file-name-as-directory
+                (concat (file-name-directory load-file-name) "themes/"))))
 
 (provide 'circadian)
 ;;; circadian.el ends here

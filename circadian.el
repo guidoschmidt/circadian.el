@@ -38,7 +38,7 @@
 
 (defun load-theme-if-needed (theme)
   "Load the THEME when it is not already loaded."
-  (when (not (find theme custom-enabled-themes))
+  (when (not (member theme custom-enabled-themes))
     (load-theme theme t)))
 
 ;; before loading new theme

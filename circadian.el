@@ -66,7 +66,7 @@
 (when load-file-name
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory
-                (concat (file-name-directory load-file-name) "themes/"))))
+                (file-name-directory load-file-name))))
 
 (provide 'circadian)
 ;;; circadian.el ends here

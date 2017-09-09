@@ -29,7 +29,6 @@
 ;; Example usage (with `use-package'):
 ;;
 ;; (use-package circadian
-;;   :load-path "~/.emacs.d/config/circadian/"
 ;;   :config
 ;;   (setq circadian-day-start-hour 8)
 ;;   (setq circadian-day-theme 'hemera)

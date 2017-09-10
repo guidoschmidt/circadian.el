@@ -40,7 +40,5 @@ Circadian features two themes: Nyx & Hemera
 ---
 
 ### TODOs & Ideas
-- Better settings for daytimes (day/night) - with minutes - maybe time strings?
-- Find another way to switch themes than using switch-buffer? Check clock?
 - Possible to interpolate colors of themes?
 - Query brightness sensors of laptops?

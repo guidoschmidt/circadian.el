@@ -39,13 +39,8 @@ and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-packa
 ---
 
 ### Themes
-Circadian features two themes: Nyx & Hemera
-
-#### Nyx (Nighttime)
-![Nyx Theme](./themes/preview/nyx.png)
-
-#### Hemera (Daytime)
-![Hemera Theme](./themes/preview/hemera.png)
+Circadian features two themes - [Nyx (nighttime)](https://github.com/GuidoSchmidt/emacs-nyx-theme)
+and [Hemera (daytime)](https://github.com/GuidoSchmidt/emacs-hemera-theme)
 
 ---
 

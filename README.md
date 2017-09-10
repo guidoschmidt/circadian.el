@@ -14,18 +14,16 @@ adaption software like:
 - [f.lux](https://justgetflux.com/news/pages/mac/)
 - [Lumen](https://github.com/anishathalye/lumen)
 
-### Usage
-- Clone this repository into your `.emacs.d/` directory
-- Add this to your `init.el` (with use-package):
+### Example usage
+Example usage featuring [hemera-themes](https://github.com/GuidoSchmidt/emacs-hemera-theme)
+and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-package):
 
 ```elisp
 (use-package circadian
-  :load-path "~/.emacs.d/circadian/"
   :config
-  (setq circadian-day-start-hour 8)
-  (setq circadian-day-theme 'hemera)
-  (setq circadian-night-start-hour 21)
-  (setq circadian-night-theme 'nyx))
+  (setq circadian-themes '(("8:00" . hemera)
+                           ("19:30" . nyx)))
+  (circadian-setup))
 ```
 
 ---

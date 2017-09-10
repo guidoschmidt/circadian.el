@@ -1,11 +1,11 @@
 ;;; circadian.el --- Theme-switching based on daytime
 
-;; Copyright (C) 2010-2017 Guido Schmidt
+;; Copyright (C) 2017 Guido Schmidt
 
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -26,80 +26,54 @@
 
 ;;; Commentary:
 ;; Circadian provides automated theme switching based on daytime.
-;; Example usage (with `use-package'):
+;;
+;; Example usage (with `use-package') featuring `nyx-theme' and `hemera-theme':
 ;;
 ;; (use-package circadian
 ;;   :config
-;;   (setq circadian-day-start-hour 8)
-;;   (setq circadian-day-theme 'hemera)
-;;   (setq circadian-night-start-hour 19)
-;;   (setq circadian-night-theme 'nyx))
+;;   (setq circadian-themes '(("8:00" . hemera)
+;;                            ("19:30" . nyx)))
+;;   (circadian-setup))
 
 ;;; Change Log:
 
+;; 0.2
+;; - nyx-theme and hemera-theme live in their own repos from now on:
+;;   nyx: https://github.com/GuidoSchmidt/emacs-nyx-theme
+;;   hemera: https://github.com/GuidoSchmidt/emacs-hemera-theme
+;; - Use default themes for default configuration of `circadian-themes'
+;; - Re-implemented configuration using associated list and timers
+;;   (thanks to Steve Purcell for pointing me into this direction)
+;;
 ;; 0.1
 ;; - Initial release
 ;; - Variables for day/night hour
 ;; - Themes included: hemera-theme, nyx-theme
 
 ;;; Code:
-(defcustom circadian-day-theme 'hemera
-  "Theme to use during the day."
-  :type 'string
+(defcustom circadian-themes '(("7:30" . leuven)
+                              ("19:30" . wombat))
+  "List of themes mapped to the time they should be loaded."
+  :type 'alist
   :group 'circadian)
 
-(defcustom circadian-night-theme 'nyx
-  "Theme to use during the night."
-  :type 'string
-  :group 'circadian)
+(defun circadian-enable-theme (theme)
+  "Clear previous `custom-enabled-themes' and load THEME."
+  (setq custom-enabled-themes '())
+  (load-theme theme t))
 
-(defcustom circadian-night-start-hour 19
-  "Night theme is enabled after this time of day."
-  :type 'integer
-  :group 'circadian)
-
-(defcustom circadian-day-start-hour 7
-  "Day theme is enabled after this time of day."
-  :type 'integer
-  :group 'circadian)
-
-(defun circadian-nighttime? ()
-  "Check if night-theme needs to be enabled."
-  (let ((current-hour (nth 2 (decode-time (date-to-time (current-time-string))))))
-    (or (>= current-hour circadian-night-start-hour)
-        (<= current-hour circadian-day-start-hour))))
-
-(defun circadian-load-theme-if-needed (theme)
-  "Load the THEME when it is not already loaded."
-  (when (not (member theme custom-enabled-themes))
-    (load-theme theme t)))
-
-;; before loading new theme
-(defun circadian-load-theme-disable-old-theme(theme &rest args)
-  "Disable current theme before loading new one."
-  (mapcar #'disable-theme custom-enabled-themes))
-(advice-add 'load-theme :before #'circadian-load-theme-disable-old-theme)
-
-;; After loading new theme
-(defun circadian-load-theme-restore-line-numbering(theme &rest args)
-  "Set linum-format again after loading any theme."
-  (setq linum-format 'linum-format-func))
-(advice-add 'load-theme :after #'circadian-load-theme-restore-line-numbering)
-
-;; Custom hook for determining the day time theme
-(defun circadian-theme-hook ()
-  "Hook to automatically load defined circadian themes."
-  (if (circadian-nighttime?)
-      (circadian-load-theme-if-needed circadian-night-theme)
-    (circadian-load-theme-if-needed circadian-day-theme)))
-(add-hook 'after-change-major-mode-hook 'circadian-theme-hook)
-(add-hook 'emacs-startup-hook 'circadian-theme-hook)
+(defun circadian-mapcar (entry)
+  "Map over `circadian-themes' to run a timer for each ENTRY."
+  (let ((time (first entry)))
+    (let ((theme (cdr (assoc time circadian-themes)))
+          (repeat-after 86400))
+      (run-at-time time repeat-after 'circadian-enable-theme theme))))
 
 ;;;###autoload
-(when load-file-name
-  (add-to-list 'custom-theme-load-path
-               (file-name-as-directory
-                (file-name-directory load-file-name))))
+(defun circadian-setup ()
+  "Setup circadian based on `circadian-themes'."
+  (interactive)
+  (mapcar 'circadian-mapcar circadian-themes))
 
 (provide 'circadian)
 ;;; circadian.el ends here

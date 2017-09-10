@@ -15,11 +15,21 @@ adaption software like:
 - [Lumen](https://github.com/anishathalye/lumen)
 
 ### Example usage
+Example usage with default themes (leuven at 7:30, wombat at 19:30):
+```elisp
+(use-package circadian
+  :ensure t
+  :config
+  (circadian-setup))
+```
+
 Example usage featuring [hemera-themes](https://github.com/GuidoSchmidt/emacs-hemera-theme)
 and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-package):
 
 ```elisp
 (use-package circadian
+  :load-path "~/.emacs.d/config/circadian/"
+  :ensure t
   :config
   (setq circadian-themes '(("8:00" . hemera)
                            ("19:30" . nyx)))

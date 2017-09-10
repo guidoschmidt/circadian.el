@@ -72,7 +72,6 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (interactive)
   (mapcar 'circadian-mapcar circadian-themes))
 
 (provide 'circadian)

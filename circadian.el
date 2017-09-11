@@ -69,10 +69,41 @@
           (repeat-after 86400))
       (run-at-time time repeat-after 'circadian-enable-theme theme))))
 
+;;; --- TIME COMPARISONS
+(defun circadian-time-string-from-list (time-list)
+  (mapconcat 'identity time-list ":"))
+
+(defun circadian-now-time-string ()
+  (let ((only-time (split-string (fourth (split-string (current-time-string))) ":")))
+    (circadian-time-string-from-list (butlast only-time 1))))
+
+(defun circadian-compare-hours (hour-a hour-b)
+  (>= hour-a hour-b))
+
+(defun circadian-compare-minutes (min-a min-b)
+  (>= min-a min-b))
+
+(defun circadian-compare-time-strings (time-a time-b)
+  (let ((parsed-time-a (parse-time-string time-a))
+        (parsed-time-b (parse-time-string time-b)))
+    (and (circadian-compare-hours (third parsed-time-b) (third parsed-time-a))
+         (circadian-compare-minutes (second parsed-time-b) (second parsed-time-a)))))
+
+(defun circadian-time-to-activate-p (time)
+  (circadian-compare-time-strings (circadian-now-time-string) time))
+
+(defun circadian-needs-activation (entry)
+  (let ((time (first entry)))
+    (let ((theme (cdr (assoc time circadian-themes))))
+      (if (circadian-time-to-activate-p time)
+          theme
+        (load-theme theme t)))))
+
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapcar 'circadian-mapcar circadian-themes))
+  (mapcar 'circadian-mapcar circadian-themes)
+  (mapcar 'circadian-needs-activation circadian-themes))
 
 (provide 'circadian)
 ;;; circadian.el ends here

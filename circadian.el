@@ -71,39 +71,50 @@
 
 ;;; --- TIME COMPARISONS
 (defun circadian-time-string-from-list (time-list)
+  "Concat list items from TIME-LIST to a time string separated by ':'."
   (mapconcat 'identity time-list ":"))
 
 (defun circadian-now-time-string ()
+  "Get the current time as string in the format 'HH:MM'."
   (let ((only-time (split-string (fourth (split-string (current-time-string))) ":")))
     (circadian-time-string-from-list (butlast only-time 1))))
 
 (defun circadian-compare-hours (hour-a hour-b)
+  "Compare two hours HOUR-A and HOUR-B."
   (>= hour-a hour-b))
 
 (defun circadian-compare-minutes (min-a min-b)
+  "Compare two minutes MIN-A and MIN-B."
   (>= min-a min-b))
 
 (defun circadian-compare-time-strings (time-a time-b)
+  "Compare to time strings TIME-A and TIME-B by hour and minutes."
   (let ((parsed-time-a (parse-time-string time-a))
         (parsed-time-b (parse-time-string time-b)))
     (and (circadian-compare-hours (third parsed-time-b) (third parsed-time-a))
          (circadian-compare-minutes (second parsed-time-b) (second parsed-time-a)))))
 
-(defun circadian-time-to-activate-p (time)
-  (circadian-compare-time-strings (circadian-now-time-string) time))
+(defun circadian-filter-inactivate-themes ()
+  "Find themes that need to be activated due to time is before now."
+  (remove-if (lambda (entry)
+               (let ((theme-time (first entry))
+                     (now-time (circadian-now-time-string)))
+                 (not (circadian-compare-time-strings theme-time now-time))))
+             circadian-themes))
 
-(defun circadian-needs-activation (entry)
-  (let ((time (first entry)))
-    (let ((theme (cdr (assoc time circadian-themes))))
-      (if (circadian-time-to-activate-p time)
-          theme
+(defun circadian-activate-latest-theme ()
+  "Check which themes are overdue to be activated and load the last.
+`circadian-themes' is expected to be sorted by time for now."
+  (let ((entry (first (last (circadian-filter-inactivate-themes)))))
+    (let ((time (first entry)))
+      (let ((theme (cdr (assoc time circadian-themes))))
         (load-theme theme t)))))
 
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
   (mapcar 'circadian-mapcar circadian-themes)
-  (mapcar 'circadian-needs-activation circadian-themes))
+  (circadian-activate-latest-theme))
 
 (provide 'circadian)
 ;;; circadian.el ends here

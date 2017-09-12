@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.2
+;; Version: 0.2.1
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -37,6 +37,9 @@
 
 ;;; Change Log:
 
+;; 0.2.1
+;; - Add function to load the latest overdue theme to `circadian-setup'
+;;
 ;; 0.2
 ;; - nyx-theme and hemera-theme live in their own repos from now on:
 ;;   nyx: https://github.com/GuidoSchmidt/emacs-nyx-theme

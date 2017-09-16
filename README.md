@@ -1,3 +1,5 @@
+[![MELPA](https://melpa.org/packages/circadian-badge.svg)](https://melpa.org/#/circadian)
+
 # circadian.el
 > Theme-switching for Emacs based on daytime
 

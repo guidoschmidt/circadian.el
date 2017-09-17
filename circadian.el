@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -37,10 +37,16 @@
 
 ;;; Change Log:
 
+;; 0.2.2
+;; - Added testing (+ configuration for travis CI)
+;; - Changed arguments of `circadian-filter-inactivate-themes' to accept
+;;   the current time string + themes asoc list due to gain testability
+;;   of that function with various time strings (see `tests/').
+;;
 ;; 0.2.1
 ;; - Add function to load the latest overdue theme to `circadian-setup'
 ;;
-;; 0.2
+;; 0.2.0
 ;; - nyx-theme and hemera-theme live in their own repos from now on:
 ;;   nyx: https://github.com/GuidoSchmidt/emacs-nyx-theme
 ;;   hemera: https://github.com/GuidoSchmidt/emacs-hemera-theme
@@ -48,7 +54,7 @@
 ;; - Re-implemented configuration using associated list and timers
 ;;   (thanks to Steve Purcell for pointing me into this direction)
 ;;
-;; 0.1
+;; 0.1.0
 ;; - Initial release
 ;; - Variables for day/night hour
 ;; - Themes included: hemera-theme, nyx-theme

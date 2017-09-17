@@ -49,3 +49,4 @@ and [Hemera (daytime)](https://github.com/GuidoSchmidt/emacs-hemera-theme)
 ### TODOs & Ideas
 - Possible to interpolate colors of themes?
 - Query brightness sensors of laptops?
+- Extend tests

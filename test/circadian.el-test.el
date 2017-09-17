@@ -1,4 +1,7 @@
 ;;; circadian.el-test.el --- Tests for circadian.el
+;;; Commentary:
+
+;;; Code:
 (require 'cl)
 (load (expand-file-name "circadian.el" default-directory))
 
@@ -34,9 +37,4 @@
   (let ((time-now "11:52"))
     (should (equal 4 (length (circadian-filter-inactivate-themes time-now circadian-themes))))))
 
-;; (print custom-enabled-themes)
-;; (print circadian-themes)
-;; (print (circadian-now-time-string))
-;; (print (circadian-compare-time-strings (circadian-now-time-string) "10:00"))
-;; (print (circadian-filter-inactivate-themes))
 ;;; circadian.el-test.el ends here

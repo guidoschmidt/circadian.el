@@ -1,6 +1,9 @@
-[![MELPA](https://melpa.org/packages/circadian-badge.svg)](https://melpa.org/#/circadian) [![Build Status](https://travis-ci.org/guidoschmidt/circadian.el.svg?branch=master)](https://travis-ci.org/guidoschmidt/circadian.el)
-
 <p align="center">
+<img src="https://melpa.org/packages/circadian-badge.svg" alt="MELPA"/>
+<img src="https://travis-ci.org/guidoschmidt/circadian.el.svg?branch=master" alt="https://travis-ci.org/guidoschmidt/circadian.el"/>
+<br>
+<br>
+<br>
 <img src="logo.png" alt="Logo"/>
 
 <h1 align="center">circadian</h1>

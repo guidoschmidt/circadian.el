@@ -1,9 +1,9 @@
-[![MELPA](https://melpa.org/packages/circadian-badge.svg)](https://melpa.org/#/circadian) [![Build Status](https://travis-ci.org/GuidoSchmidt/circadian.el.svg?branch=master)](https://travis-ci.org/GuidoSchmidt/circadian.el)
-
-# circadian.el
-> Theme-switching for Emacs based on daytime
+[![MELPA](https://melpa.org/packages/circadian-badge.svg)](https://melpa.org/#/circadian) [![Build Status](https://travis-ci.org/guidoschmidt/circadian.el.svg?branch=master)](https://travis-ci.org/guidoschmidt/circadian.el)
 
 ![Logo Circadian](logo.png)
+
+# circadian
+### Theme-switching for Emacs based on daytime
 
 ### Why?
 Circadian tries to help reducing eye strain that may arise

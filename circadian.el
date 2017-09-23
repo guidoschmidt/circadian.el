@@ -68,7 +68,7 @@
 
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
-  (setq custom-enabled-themes '())
+  (mapc 'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
 (defun circadian-mapcar (entry)

@@ -29,12 +29,20 @@
                            ("21:00" . wombat)
                            ("23:00" . leuven)))
   (let ((time-now "4:10"))
-    (should (equal 0 (length (circadian-filter-inactivate-themes time-now circadian-themes)))))
+    (should (equal 0 (length (circadian-filter-inactivate-themes
+                              circadian-themes
+                              time-now)))))
   (let ((time-now "5:03"))
-    (should (equal 1 (length (circadian-filter-inactivate-themes time-now circadian-themes)))))
+    (should (equal 1 (length (circadian-filter-inactivate-themes
+                              circadian-themes
+                              time-now)))))
   (let ((time-now "7:20"))
-    (should (equal 2 (length (circadian-filter-inactivate-themes time-now circadian-themes)))))
+    (should (equal 2 (length (circadian-filter-inactivate-themes
+                              circadian-themes
+                              time-now)))))
   (let ((time-now "11:52"))
-    (should (equal 4 (length (circadian-filter-inactivate-themes time-now circadian-themes))))))
+    (should (equal 4 (length (circadian-filter-inactivate-themes
+                              circadian-themes
+                              time-now))))))
 
 ;;; circadian.el-test.el ends here

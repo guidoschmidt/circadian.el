@@ -1,4 +1,4 @@
-;;; circadian.el --- Theme-switching based on daytime
+;;; circadian.el --- Theme-switching based on daytime -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 Guido Schmidt
 
@@ -60,6 +60,8 @@
 ;; - Themes included: hemera-theme, nyx-theme
 
 ;;; Code:
+(require 'cl-lib)
+
 (defcustom circadian-themes '(("7:30" . leuven)
                               ("19:30" . wombat))
   "List of themes mapped to the time they should be loaded."

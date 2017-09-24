@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -42,6 +42,8 @@
 ;; - Prefixed cl function like `cl-first', `cl-remove-if'
 ;; - `mapcar' -> `mapc'
 ;; - Swapped argument order for `circadian-filter-inactivate-themes'
+;; - Bugfix: load the last theme from `circadian-themes', when the first
+;;   time slot lies in the future
 ;;
 ;; 0.2.2
 ;; - Added testing (+ configuration for travis CI)
@@ -126,7 +128,9 @@
                                 (circadian-now-time-string))))))
     (let ((time (cl-first entry)))
       (let ((theme (cdr (assoc time circadian-themes))))
-        (load-theme theme t)))))
+        (if (equal theme nil)
+            (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
+          (circadian-enable-theme theme))))))
 
 ;;;###autoload
 (defun circadian-setup ()

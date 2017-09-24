@@ -1,11 +1,11 @@
-;;; circadian.el --- Theme-switching based on daytime
+;;; circadian.el --- Theme-switching based on daytime -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2017 Guido Schmidt
 
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -36,7 +36,15 @@
 ;;   (circadian-setup))
 
 ;;; Change Log:
-
+;; 0.2.3
+;; - Use -*- lexical-binding: t -*-
+;; - Requiring cl-lib
+;; - Prefixed cl function like `cl-first', `cl-remove-if'
+;; - `mapcar' -> `mapc'
+;; - Swapped argument order for `circadian-filter-inactivate-themes'
+;; - Bugfix: load the last theme from `circadian-themes', when the first
+;;   time slot lies in the future
+;;
 ;; 0.2.2
 ;; - Added testing (+ configuration for travis CI)
 ;; - Changed arguments of `circadian-filter-inactivate-themes' to accept
@@ -60,6 +68,8 @@
 ;; - Themes included: hemera-theme, nyx-theme
 
 ;;; Code:
+(require 'cl-lib)
+
 (defcustom circadian-themes '(("7:30" . leuven)
                               ("19:30" . wombat))
   "List of themes mapped to the time they should be loaded."
@@ -73,7 +83,7 @@
 
 (defun circadian-mapcar (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."
-  (let ((time (first entry)))
+  (let ((time (cl-first entry)))
     (let ((theme (cdr (assoc time circadian-themes)))
           (repeat-after 86400))
       (run-at-time time repeat-after 'circadian-enable-theme theme))))
@@ -85,7 +95,7 @@
 
 (defun circadian-now-time-string ()
   "Get the current time as string in the format 'HH:MM'."
-  (let ((only-time (split-string (fourth (split-string (current-time-string))) ":")))
+  (let ((only-time (split-string (cl-fourth (split-string (current-time-string))) ":")))
     (circadian-time-string-from-list (butlast only-time 1))))
 
 (defun circadian-compare-hours (hour-a hour-b)
@@ -100,28 +110,32 @@
   "Compare to time strings TIME-A and TIME-B by hour and minutes."
   (let ((parsed-time-a (parse-time-string time-a))
         (parsed-time-b (parse-time-string time-b)))
-    (and (circadian-compare-hours (third parsed-time-b) (third parsed-time-a))
-         (circadian-compare-minutes (second parsed-time-b) (second parsed-time-a)))))
+    (and (circadian-compare-hours (cl-third parsed-time-b) (cl-third parsed-time-a))
+         (circadian-compare-minutes (cl-second parsed-time-b) (cl-second parsed-time-a)))))
 
-(defun circadian-filter-inactivate-themes (now-time theme-list)
-  "Find themes form THEME-LIST that need activation due to time is before now."
-  (remove-if (lambda (entry)
-               (let ((theme-time (first entry)))
-                 (not (circadian-compare-time-strings theme-time now-time))))
-             theme-list))
+(defun circadian-filter-inactivate-themes (theme-list now-time)
+  "Filter THEME-LIST to consist of themes that are due NOW-TIME."
+  (cl-remove-if (lambda (entry)
+                  (let ((theme-time (cl-first entry)))
+                    (not (circadian-compare-time-strings theme-time now-time))))
+                theme-list))
 
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last.
 `circadian-themes' is expected to be sorted by time for now."
-  (let ((entry (first (last (circadian-filter-inactivate-themes (circadian-now-time-string) circadian-themes)))))
-    (let ((time (first entry)))
+  (let ((entry (cl-first (last (circadian-filter-inactivate-themes
+                                circadian-themes
+                                (circadian-now-time-string))))))
+    (let ((time (cl-first entry)))
       (let ((theme (cdr (assoc time circadian-themes))))
-        (load-theme theme t)))))
+        (if (equal theme nil)
+            (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
+          (circadian-enable-theme theme))))))
 
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapcar 'circadian-mapcar circadian-themes)
+  (mapc 'circadian-mapcar circadian-themes)
   (circadian-activate-latest-theme))
 
 (provide 'circadian)

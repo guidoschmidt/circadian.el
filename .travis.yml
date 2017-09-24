@@ -32,3 +32,5 @@ install:
 script:
   # Run your tests
   - cask exec ert-runner
+  # Byte-compile
+  - emacs -Q -batch -f batch-byte-compile circadian.el

@@ -1,6 +1,8 @@
 <p align="center">
 <img src="https://melpa.org/packages/circadian-badge.svg" alt="MELPA"/>
+<a href="https://travis-ci.org/guidoschmidt/circadian.el" target="_blank">
 <img src="https://travis-ci.org/guidoschmidt/circadian.el.svg?branch=master" alt="https://travis-ci.org/guidoschmidt/circadian.el"/>
+</a>
 <br>
 <br>
 <br>

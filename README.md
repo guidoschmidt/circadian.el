@@ -60,7 +60,7 @@ and [Hemera (daytime)](https://github.com/GuidoSchmidt/emacs-hemera-theme)
 - Possible to interpolate colors of themes?
 - Query brightness sensors of laptops?
 - Extend tests
-- Load themes by mode
-- Load themes by machine name
-- Load themes by wifi/location?
-- Use emacs builtin sunrise-sunset feature
+- Load themes by mode [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
+- Load themes by machine name [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
+- Load themes by wifi/location? [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
+- Use emacs builtin sunrise-sunset feature (see Issues)

@@ -3,6 +3,7 @@
 
 ;;; Code:
 (require 'cl)
+(require 'el-mock)
 (load (expand-file-name "circadian.el" default-directory))
 
 (ert-deftest test-circadian-time-comparison ()
@@ -43,6 +44,21 @@
   (let ((time-now "11:52"))
     (should (equal 4 (length (circadian-filter-inactivate-themes
                               circadian-themes
+                              time-now)))))
+  (let ((time-now "00:14"))
+    (should (equal 0 (length (circadian-filter-inactivate-themes
+                              circadian-themes
                               time-now))))))
 
+(ert-deftest test-circadian-activate-latest-theme ()
+  (setq circadian-themes '(("7:00" . wombat)
+                           ("16:00" . leuven)))
+  (with-mock
+   (stub circadian-now-time-string => "7:21")
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes))))
+  (with-mock
+   (stub circadian-now-time-string => "17:00")
+   (circadian-activate-latest-theme)
+   (should (equal 'leuven (cl-first custom-enabled-themes)))))
 ;;; circadian.el-test.el ends here

@@ -4,3 +4,4 @@
 (package "circadian" "" "automatic theme-switching based on daytime")
 
 (depends-on "ert-runner")
+(depends-on "el-mock")

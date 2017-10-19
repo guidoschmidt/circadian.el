@@ -16,19 +16,19 @@
 
 (ert-deftest test-circadian-filter-themes ()
   (setq circadian-themes '(("5:00"  . wombat)
-                           ("7:00"  . leuven)
+                           ("7:00"  . adwaita)
                            ("9:00"  . wombat)
-                           ("11:00" . leuven)
+                           ("11:00" . adwaita)
                            ("12:00" . wombat)
-                           ("13:00" . leuven)
+                           ("13:00" . adwaita)
                            ("14:00" . tango)
                            ("15:00" . adwaita)
                            ("16:00" . wombat)
-                           ("17:00" . leuven)
+                           ("17:00" . adwaita)
                            ("18:00" . tango)
                            ("19:00" . adwaita)
                            ("21:00" . wombat)
-                           ("23:00" . leuven)))
+                           ("23:00" . adwaita)))
   (let ((time-now "4:10"))
     (should (equal 0 (length (circadian-filter-inactivate-themes
                               circadian-themes
@@ -52,7 +52,7 @@
 
 (ert-deftest test-circadian-activate-latest-theme ()
   (setq circadian-themes '(("7:00" . wombat)
-                           ("16:00" . leuven)))
+                           ("16:00" . tango)))
   (with-mock
    (stub circadian-now-time-string => "7:21")
    (circadian-activate-latest-theme)

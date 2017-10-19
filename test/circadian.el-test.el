@@ -60,5 +60,5 @@
   (with-mock
    (stub circadian-now-time-string => "17:00")
    (circadian-activate-latest-theme)
-   (should (equal 'leuven (cl-first custom-enabled-themes)))))
+   (should (equal 'tango (cl-first custom-enabled-themes)))))
 ;;; circadian.el-test.el ends here

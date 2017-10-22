@@ -69,6 +69,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'subr-x)
 
 (defcustom circadian-themes '(("7:30" . leuven)
                               ("19:30" . wombat))
@@ -83,7 +84,7 @@
 
 (defun circadian-mapcar (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."
-  (let ((time (cl-first entry)))
+  (let ((time (circadian-match-sun (cl-first entry))))
     (let ((theme (cdr (assoc time circadian-themes)))
           (repeat-after 86400))
       (run-at-time time repeat-after 'circadian-enable-theme theme))))
@@ -137,6 +138,55 @@
         (if (equal theme nil)
             (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
           (circadian-enable-theme theme))))))
+
+;; --- Sunset-sunrise
+(defun clean-string (string)
+  "Clean Emacs' STRING derived from `sunset-sunrise' result."
+  (string-trim (replace-regexp-in-string
+                "sun.[A-za-z]+" ""
+                (replace-regexp-in-string
+                 "(CEST)" ""
+                 string))))
+
+(defun circadian-sunrise ()
+  "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
+  (clean-string
+   (cl-first (split-string (sunrise-sunset) ","))))
+
+(defun circadian-sunset ()
+  "Get clean sunset time string from Emacs' `sunset-sunrise'`."
+  (let ((sunset-string (clean-string (cl-second (split-string (sunrise-sunset) ",")))))
+    (string-trim (replace-regexp-in-string "at.+" "" sunset-string))))
+
+(defun circadian-12-to-24h-offset (string)
+  "Match STRING for am/am and return the offset to 24h system."
+  (cond ((string-match-p "am" string)
+         0)
+        ((string-match-p "pm" string)
+         12)
+        ;; default
+        (t 0)))
+
+(defun circadian-clear-12h-postfix (input)
+  "Remove am/pm post-fix from INPUT."
+  (replace-regexp-in-string ".m" "" input))
+
+(defun circadian-parse-time-string (input)
+  "Parse INPUT and return corrected 24h time string."
+  (let ((splitted (split-string input ":"))
+        (add-hour (circadian-12-to-24h-offset input)))
+    (let ((hours (string-to-number (cl-first splitted)))
+          (minutes (circadian-clear-12h-postfix (cl-second splitted))))
+      (concat (number-to-string (+ hours add-hour)) ":" minutes))))
+
+(defun circadian-match-sun (input)
+  "Match INPUT to a case for setting up timers."
+  (cond ((cl-equalp input :sunrise)
+         (circadian-parse-time-string (circadian-sunrise)))
+        ((cl-equalp input :sunset)
+         (circadian-parse-time-string (circadian-sunset)))
+        ((stringp input)
+         input)))
 
 ;;;###autoload
 (defun circadian-setup ()

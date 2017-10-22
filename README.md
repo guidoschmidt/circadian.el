@@ -49,9 +49,24 @@ and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-packa
 ### Switch themes on sunrise & sunset
 Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https://www.latlong.net/)):
 ```elisp
-(setq calendar-latitude 49.329896)
-(setq calendar-longitude 8.570925)
+
+(use-package circadian
+  :load-path "~/.emacs.d/config/circadian/"
+  :ensure t
+  :config
+  (setq calendar-latitude 49.0)
+  (setq calendar-longitude 8.5)
+  (setq circadian-themes '((:sunrise . apropospriate-light)
+                           ("10:00"  . hemera)
+                           ("19:30"  . nyx)
+                           (:sunset  . nord)))
+  (circadian-setup))
 ```
+
+**:warning: The preceding example features the following themes - make sure to have them
+installed, before using them in circadian**
+- [Apropospriate Theme](https://github.com/waymondo/apropospriate-theme)
+- [Nord Theme](https://github.com/arcticicestudio/nord-emacs)
 
 ---
 

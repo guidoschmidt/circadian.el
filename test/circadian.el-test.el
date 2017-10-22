@@ -6,13 +6,6 @@
 (require 'el-mock)
 (load (expand-file-name "circadian.el" default-directory))
 
-(ert-deftest test-circadian-time-comparison ()
-  (let ((time-a "7:00")
-        (time-b "14:00"))
-    (should (equal t (circadian-compare-time-strings time-a time-b)))
-    (should (equal nil (not (circadian-compare-time-strings time-a time-b))))
-    (should (equal nil (circadian-compare-time-strings time-b time-a)))
-    (should (equal t (not (circadian-compare-time-strings time-b time-a))))))
 
 (ert-deftest test-circadian-filter-themes ()
   (setq circadian-themes '(("5:00"  . wombat)
@@ -61,4 +54,13 @@
    (stub circadian-now-time-string => "17:00")
    (circadian-activate-latest-theme)
    (should (equal 'tango (cl-first custom-enabled-themes)))))
+(ert-deftest test-circadian-time-comparisons ()
+  "Test comparison of time strings.
+   Time A: 17:59
+   Time B: 17:58
+   B should be earlier than A
+   => `circadian-a-earlier-b-p' should return `t'."
+  (should (equal t (circadian-a-earlier-b-p "7:50" "7:51")))
+  (should (equal nil (circadian-a-earlier-b-p "19:20" "19:19")))
+  (should (equal t (circadian-a-earlier-b-p "20:20" "20:20"))))
 ;;; circadian.el-test.el ends here

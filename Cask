@@ -1,7 +1,7 @@
 (source gnu)
 (source melpa)
 
-(package "circadian" "" "automatic theme-switching based on daytime")
+(package "circadian" "0.3.0" "automatic theme-switching based on daytime")
 
 (depends-on "ert-runner")
 (depends-on "el-mock")

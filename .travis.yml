@@ -29,9 +29,9 @@ before_install:
   - make -f emacs-travis.mk install_texinfo
 install:
   # Install your dependencies
-  - EMACS=emacs$(EMACS_VERSION) cask install
+  - cask install
 script:
   # Run tests
-  - EMACS=emacs$(EMACS_VERSION) cask exec ert-runner
+  - cask exec ert-runner
   # Byte-compile
-  - EMACS=emacs$(EMACS_VERSION) cask build
+  # - cask build

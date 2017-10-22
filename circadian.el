@@ -49,10 +49,10 @@
   (mapc #'disable-theme custom-enabled-themes)
   (load-theme theme t))
 
-(defun circadian-mapcar (entry)
+(defun circadian-mapc (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."
   (let ((time (circadian-match-sun (cl-first entry))))
-    (let ((theme (cdr (assoc time circadian-themes)))
+    (let ((theme (cdr entry))
           (repeat-after 86400))
       (run-at-time time repeat-after 'circadian-enable-theme theme))))
 
@@ -100,11 +100,10 @@
   (let ((entry (cl-first (last (circadian-filter-inactivate-themes
                                 circadian-themes
                                 (circadian-now-time-string))))))
-    (let ((time (cl-first entry)))
-      (let ((theme (cdr (assoc time circadian-themes))))
-        (if (equal theme nil)
-            (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
-          (circadian-enable-theme theme))))))
+    (let ((theme (cdr entry)))
+      (if (equal theme nil)
+          (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
+        (circadian-enable-theme theme)))))
 
 ;; --- Sunset-sunrise
 (defun clean-string (string)
@@ -160,7 +159,7 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapc 'circadian-mapcar circadian-themes)
+  (mapc 'circadian-mapc circadian-themes)
   (circadian-activate-latest-theme))
 
 (provide 'circadian)

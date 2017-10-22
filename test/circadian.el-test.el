@@ -11,6 +11,7 @@
 
 (ert-deftest test-circadian-filter-themes ()
   "Test filtering of `circadian-themes' list.`"
+  (print "-> TEST: circadian-filter-themes")
   (setq circadian-themes '(("5:01"  . wombat)
                            ("7:15"  . adwaita)
                            ("9:30"  . wombat)
@@ -50,6 +51,7 @@
 
 (ert-deftest test-circadian-activate-latest-theme ()
   "Test `circadian-activate-latest-theme' used in `circadian-setup'."
+  (print "-> TEST: circadian-activate-latest-theme")
   (setq circadian-themes '(("7:00" . wombat)
                            ("16:00" . tango)))
   (with-mock
@@ -63,18 +65,26 @@
 
 
 
-;; (ert-deftest test-circadian-sunrise-sunset ()
-;;   "Test :sunrise and :sunset keywords for theme switching."
-;;   (setq calendar-latitude 49.329896)
-;;   (setq calendar-longitude 8.570925)
-;;   (setq circadian-themes '((:sunrise . wombat)
-;;                            (:sunset . adwaita)))
-;;   (should (equal 1 (length (circadian-filter-inactivate-themes
-;;                             circadian-themes
-;;                             "12:00"))))
-;;   (should (equal 2 (length (circadian-filter-inactivate-themes
-;;                             circadian-themes
-;;                             "23:59")))))
+(ert-deftest test-circadian-sunrise-sunset ()
+  "Test :sunrise and :sunset keywords for theme switching."
+  (print "-> TEST: sunrise/sunset")
+  (setq calendar-latitude 49.329896)
+  (setq calendar-longitude 8.570925)
+  (setq circadian-themes '((:sunrise . wombat)
+                           (:sunset . adwaita)))
+  (print (circadian-filter-inactivate-themes
+          circadian-themes
+          "14:51"))
+  (should (equal 1 (length (circadian-filter-inactivate-themes
+                            circadian-themes
+                            "14:51"))))
+  (with-mock
+   (stub circadian-now-time-string => "14:21")
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes))))
+  (should (equal 2 (length (circadian-filter-inactivate-themes
+                            circadian-themes
+                            "23:59")))))
 
 
 
@@ -84,7 +94,17 @@
    Time B: 17:58
    B should be earlier than A
    => `circadian-a-earlier-b-p' should return `t'."
+  (print "-> TEST: time comparisons")
   (should (equal t (circadian-a-earlier-b-p "7:50" "7:51")))
   (should (equal nil (circadian-a-earlier-b-p "19:20" "19:19")))
   (should (equal t (circadian-a-earlier-b-p "20:20" "20:20"))))
+
+
+
+(ert-deftest test-circadian-mapc ()
+  ""
+  (print "-> TEST: circadian-mapc")
+  (setq circadian-themes '(("8:15" . wombat)
+                           ("9:00" . tango)))
+  (mapc 'circadian-mapc circadian-themes))
 ;;; circadian.el-test.el ends here

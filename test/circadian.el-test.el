@@ -72,8 +72,10 @@
   (setq calendar-longitude 8.570925)
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset . adwaita)))
-  (print (circadian-sunrise))
-  (print (circadian-sunset))
+  (with-mock
+   (stub sunrise-sunset => "Sunrise 4:32am (CEST), sunset 4:24pm (CEST) at 8N, 49E (11:52 hrs daylight)")
+   (print (circadian-sunrise))
+   (print (circadian-sunset)))
   ;; (print (circadian-filter-inactivate-themes
   ;;         circadian-themes
   ;;         "14:51"))

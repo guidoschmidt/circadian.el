@@ -1,5 +1,13 @@
 # Change Log:
 
+### 0.3.0
+- Implement configuration with keywords `:sunrise` and `:sunset`
+- Rename `circadian-mapcar` to `circadian-mapc`
+- Fixed time-comparison bug in
+  in `circadian-compare-time-strings`
+- Renamed `circadian-compare-time-strings` to more appropriate name:
+  `circadian-a-earlier-b-p`
+
 ### 0.2.3
 - Use -*- lexical-binding: t -*-
 - Requiring cl-lib

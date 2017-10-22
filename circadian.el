@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.2.3
+;; Version: 0.3.0
 ;; Keywords: circadian, themes
 ;; Package-Requires: ((emacs "24.4"))
 

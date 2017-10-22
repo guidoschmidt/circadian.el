@@ -2,7 +2,7 @@
 ;;; Commentary:
 
 ;;; Code:
-(require 'cl)
+(require 'cl-lib)
 (require 'el-mock)
 
 (load (expand-file-name "circadian.el" default-directory))

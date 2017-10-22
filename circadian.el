@@ -115,7 +115,7 @@
           (hour-b (cl-third parsed-time-b))
           (minute-a (cl-second parsed-time-a))
           (minute-b (cl-second parsed-time-b)))
-      (cond ((equalp hour-b hour-a)
+      (cond ((cl-equalp hour-b hour-a)
              (circadian-compare-minutes minute-b minute-a))
             (t (circadian-compare-hours hour-b hour-a))))))
 

@@ -63,18 +63,18 @@
 
 
 
-(ert-deftest test-circadian-sunrise-sunset ()
-  "Test :sunrise and :sunset keywords for theme switching."
-  (setq calendar-latitude 49.329896)
-  (setq calendar-longitude 8.570925)
-  (setq circadian-themes '((:sunrise . wombat)
-                           (:sunset . adwaita)))
-  (should (equal 1 (length (circadian-filter-inactivate-themes
-                            circadian-themes
-                            "12:00"))))
-  (should (equal 2 (length (circadian-filter-inactivate-themes
-                            circadian-themes
-                            "23:59")))))
+;; (ert-deftest test-circadian-sunrise-sunset ()
+;;   "Test :sunrise and :sunset keywords for theme switching."
+;;   (setq calendar-latitude 49.329896)
+;;   (setq calendar-longitude 8.570925)
+;;   (setq circadian-themes '((:sunrise . wombat)
+;;                            (:sunset . adwaita)))
+;;   (should (equal 1 (length (circadian-filter-inactivate-themes
+;;                             circadian-themes
+;;                             "12:00"))))
+;;   (should (equal 2 (length (circadian-filter-inactivate-themes
+;;                             circadian-themes
+;;                             "23:59")))))
 
 
 

@@ -37,7 +37,6 @@
 
 ;;; Code:
 (require 'cl-lib)
-(require 'subr-x)
 
 (defcustom circadian-themes '(("7:30" . leuven)
                               ("19:30" . wombat))
@@ -110,11 +109,11 @@
 ;; --- Sunset-sunrise
 (defun clean-string (string)
   "Clean Emacs' STRING derived from `sunset-sunrise' result."
-  (string-trim (replace-regexp-in-string
-                "sun.[A-za-z]+" ""
-                (replace-regexp-in-string
-                 "(CEST)" ""
-                 string))))
+  (replace-regexp-in-string "[[:space]]" "" (replace-regexp-in-string
+                                             "sun.[A-za-z]+" ""
+                                             (replace-regexp-in-string
+                                              "(CEST)" ""
+                                              string))))
 
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
@@ -124,7 +123,9 @@
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
   (let ((sunset-string (clean-string (cl-second (split-string (sunrise-sunset) ",")))))
-    (string-trim (replace-regexp-in-string "at.+" "" sunset-string))))
+    (replace-regexp-in-string "[[:space]]" "" (replace-regexp-in-string
+                                               "at.+" ""
+                                               sunset-string))))
 
 (defun circadian-12-to-24h-offset (string)
   "Match STRING for am/am and return the offset to 24h system."

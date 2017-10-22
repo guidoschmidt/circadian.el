@@ -100,24 +100,30 @@
 
 (defun circadian-compare-hours (hour-a hour-b)
   "Compare two hours HOUR-A and HOUR-B."
-  (>= hour-a hour-b))
+  (> hour-a hour-b))
 
 (defun circadian-compare-minutes (min-a min-b)
   "Compare two minutes MIN-A and MIN-B."
   (>= min-a min-b))
 
-(defun circadian-compare-time-strings (time-a time-b)
+(defun circadian-a-earlier-b-p (time-a time-b)
   "Compare to time strings TIME-A and TIME-B by hour and minutes."
   (let ((parsed-time-a (parse-time-string time-a))
         (parsed-time-b (parse-time-string time-b)))
-    (and (circadian-compare-hours (cl-third parsed-time-b) (cl-third parsed-time-a))
-         (circadian-compare-minutes (cl-second parsed-time-b) (cl-second parsed-time-a)))))
+    (let ((hour-a (cl-third parsed-time-a))
+          (hour-b (cl-third parsed-time-b))
+          (minute-a (cl-second parsed-time-a))
+          (minute-b (cl-second parsed-time-b)))
+      (cond ((equalp hour-b hour-a)
+             (circadian-compare-minutes minute-b minute-a))
+            (t (circadian-compare-hours hour-b hour-a))))))
+
 
 (defun circadian-filter-inactivate-themes (theme-list now-time)
   "Filter THEME-LIST to consist of themes that are due NOW-TIME."
   (cl-remove-if (lambda (entry)
-                  (let ((theme-time (cl-first entry)))
-                    (not (circadian-compare-time-strings theme-time now-time))))
+                  (let ((theme-time (circadian-match-sun (cl-first entry))))
+                    (not (circadian-a-earlier-b-p theme-time now-time))))
                 theme-list))
 
 (defun circadian-activate-latest-theme ()

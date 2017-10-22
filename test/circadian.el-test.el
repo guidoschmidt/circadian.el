@@ -74,22 +74,16 @@
                            (:sunset . adwaita)))
   (with-mock
    (stub sunrise-sunset => "Sunrise 4:32am (CEST), sunset 4:24pm (CEST) at 8N, 49E (11:52 hrs daylight)")
-   (print (circadian-sunrise))
-   (print (circadian-sunset)))
-  ;; (print (circadian-filter-inactivate-themes
-  ;;         circadian-themes
-  ;;         "14:51"))
-  ;; (should (equal 1 (length (circadian-filter-inactivate-themes
-  ;;                           circadian-themes
-  ;;                           "14:51"))))
-  ;; (with-mock
-  ;;  (stub circadian-now-time-string => "14:21")
-  ;;  (circadian-activate-latest-theme)
-  ;;  (should (equal 'wombat (cl-first custom-enabled-themes))))
-  ;; (should (equal 2 (length (circadian-filter-inactivate-themes
-  ;;                           circadian-themes
-  ;;                           "23:59"))))
-  )
+   (should (equal 1 (length (circadian-filter-inactivate-themes
+                             circadian-themes
+                             "14:51"))))
+   (with-mock
+    (stub circadian-now-time-string => "14:21")
+    (circadian-activate-latest-theme)
+    (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (should (equal 2 (length (circadian-filter-inactivate-themes
+                             circadian-themes
+                             "23:59"))))))
 
 
 

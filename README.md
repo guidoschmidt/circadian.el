@@ -46,6 +46,13 @@ and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-packa
   (circadian-setup))
 ```
 
+### Switch themes on sunrise & sunset
+Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https://www.latlong.net/)):
+```elisp
+(setq calendar-latitude 49.329896)
+(setq calendar-longitude 8.570925)
+```
+
 ---
 
 ### Themes

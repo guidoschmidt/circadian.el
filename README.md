@@ -15,7 +15,7 @@
 <h3 align="center">Theme-switching for Emacs based on daytime</h3>
 </p>
 
-### Why?
+### Conception
 Circadian tries to help reducing eye strain that may arise
 from difference of your display brightness and the
 surrounding light.
@@ -26,19 +26,24 @@ adaption software like:
 - [f.lux](https://justgetflux.com/news/pages/mac/)
 - [Lumen](https://github.com/anishathalye/lumen)
 
+
+---
+
+
 ### Example usage
-Example usage with default themes (leuven at 7:30, wombat at 19:30):
-```elisp
-(use-package circadian
-  :ensure t
-  :config
-  (circadian-setup))
-```
+##### Switching themes on time of day
 
 Example usage featuring [hemera-themes](https://github.com/GuidoSchmidt/emacs-hemera-theme)
-and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-package):
+and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-package). Make sure
+to use `:defer` keyword. Omitting it may lead to broken colors 
+(see [issue 9](https://github.com/guidoschmidt/circadian.el/issues/9)):
 
 ```elisp
+;; Install additinal themes from melpa
+;; make sure to use :defer keyword
+(use-package hemera-theme :ensure :defer)
+(use-package nyx-theme :ensure :defer)
+
 (use-package circadian
   :load-path "~/.emacs.d/config/circadian/"
   :ensure t
@@ -48,9 +53,14 @@ and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-packa
   (circadian-setup))
 ```
 
-### Switch themes on sunrise & sunset
+##### Switching themes on sunrise & sunset
 Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https://www.latlong.net/)):
+
 ```elisp
+;; Install additinal themes from melpa
+;; make sure to use :defer keyword
+(use-package apropospriate-theme :ensure :defer)
+(use-package nord-theme :ensure :defer)
 
 (use-package circadian
   :load-path "~/.emacs.d/config/circadian/"
@@ -59,30 +69,38 @@ Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https
   (setq calendar-latitude 49.0)
   (setq calendar-longitude 8.5)
   (setq circadian-themes '((:sunrise . apropospriate-light)
-                           ("10:00"  . hemera)
-                           ("19:30"  . nyx)
                            (:sunset  . nord)))
   (circadian-setup))
 ```
 
-**:warning: The preceding example features the following themes - make sure to have them
-installed, before using them in circadian**
-- [Apropospriate Theme](https://github.com/waymondo/apropospriate-theme)
-- [Nord Theme](https://github.com/arcticicestudio/nord-emacs)
 
 ---
 
-### Themes
-Circadian features two themes - [Nyx (nighttime)](https://github.com/GuidoSchmidt/emacs-nyx-theme)
-and [Hemera (daytime)](https://github.com/GuidoSchmidt/emacs-hemera-theme)
+
+### Hooks
+**circadian** provides two hooks:
+- `circadian-before-load-theme-hook`
+- `circadian-after-load-theme-hook`
+
+e.g. I like to override any themes cursor color to a very bright color via:
+
+```elisp
+(add-hook 'circadian-after-load-theme-hook
+          #'(lambda (theme)
+              ;; Line numbers appearance
+              (setq linum-format 'linum-format-func)
+              ;; Cursor
+              (set-default 'cursor-type 'box)
+              (set-cursor-color "#F52503")))
+```
+
 
 ---
 
-### TODOs & Ideas
-- Possible to interpolate colors of themes?
-- Query brightness sensors of laptops?
-- Extend tests
+
+### Todos & Ideas
+- Is it possible to interpolate between themes/colors?
+- Can brightness sensors (e.g. laptops) be queried to control dimming?
 - Load themes by mode [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
 - Load themes by machine name [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
 - Load themes by wifi/location? [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
-- Use emacs builtin sunrise-sunset feature (see Issues)

@@ -1,5 +1,9 @@
 # Change Log:
 
+### 0.3.1
+- Add theme loading hooks: `circadian-before-load-theme-hook` and
+  `circadian-after-load-theme-hook`
+
 ### 0.3.0
 - Implement configuration with keywords `:sunrise` and `:sunset`
 - Rename `circadian-mapcar` to `circadian-mapc`

@@ -55,8 +55,8 @@ to use `:defer` keyword. Omitting it may lead to broken colors
 
 ##### Switching themes on sunrise & sunset
 Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https://www.latlong.net/)):
-```elisp
 
+```elisp
 ;; Install additinal themes from melpa
 ;; make sure to use :defer keyword
 (use-package apropospriate-theme :ensure :defer)
@@ -71,6 +71,27 @@ Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https
   (setq circadian-themes '((:sunrise . apropospriate-light)
                            (:sunset  . nord)))
   (circadian-setup))
+```
+
+
+---
+
+
+### Hooks
+**circadian** provides two hooks:
+- `circadian-before-load-theme-hook`
+- `circadian-after-load-theme-hook`
+
+e.g. I like to override any themes cursor color to a very bright color via:
+
+```elisp
+(add-hook 'circadian-after-load-theme-hook
+          #'(lambda (theme)
+              ;; Line numbers appearance
+              (setq linum-format 'linum-format-func)
+              ;; Cursor
+              (set-default 'cursor-type 'box)
+              (set-cursor-color "#F52503")))
 ```
 
 

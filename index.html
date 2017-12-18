@@ -1,1 +1,64 @@
-works
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" type="text/javascript"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/lisp.min.js" type="text/javascript"></script><script src="./js/main.js" type="text/javascript"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"><link href="./sass/circadian.css" rel="stylesheet" type="text/css"></head><img class="logo" height="350" src="./svg/logo.svg" width="350"><div class="content"><h1 align="center">circadian</h1>
+<h3 align="center">Theme-switching for Emacs based on daytime</h3>
+<nav>
+<a href="#conception">Conception</a>
+<a href="#usage">Usage</a>
+<a href="#hooks">Hooks</a>
+</nav>
+<h3 id="conception">Conception</h3>
+Circadian tries to help reducing eye strain that may arise
+from difference of your display brightness and the
+surrounding light.
+<p>Inspired by color temperature shifting tools and brightness adaption software like <a href="https://wiki.archlinux.org/index.php/Redshift">redshift</a>, <a href="https://justgetflux.com/news/pages/mac/">f.lux</a> and <a href="https://github.com/anishathalye/lumen">Lumen</a>.</p>
+<hr/>
+<h3 id="usage">Example usage</h3>
+<h5><a href="#switching-themes-on-time-of-day" id="switching-themes-on-time-of-day"></a>Switching themes on time of day</h5>
+<p>Example usage featuring <a href="https://github.com/GuidoSchmidt/emacs-hemera-theme">hemera-theme</a> and <a href="https://github.com/GuidoSchmidt/emacs-nyx-theme">nyx-theme</a> (with use-package). Make sure to use <code>:defer</code> keyword. Omitting it may lead to broken colors (see <a href="https://github.com/guidoschmidt/circadian.el/issues/9">issue 9</a>):</p>
+<pre><code>;; Install additinal themes from melpa
+;; make sure to use :defer keyword
+(use-package hemera-theme :ensure :defer)
+(use-package nyx-theme :ensure :defer)
+
+(use-package circadian
+  :load-path &quot;~/.emacs.d/config/circadian/&quot;
+  :ensure t
+  :config
+  (setq circadian-themes '((&quot;8:00&quot; . hemera)
+                           (&quot;19:30&quot; . nyx)))
+  (circadian-setup))
+</code></pre>
+<h5><a href="#switching-themes-on-sunrise-sunset" id="switching-themes-on-sunrise-sunset"></a>Switching themes on sunrise &amp; sunset</h5>
+<p>Be sure to set your latitude and longitude (Get them e.g. at <a href="https://www.latlong.net/">latlong.net</a>):</p>
+<pre><code>;; Install additinal themes from melpa
+;; make sure to use :defer keyword
+(use-package apropospriate-theme :ensure :defer)
+(use-package nord-theme :ensure :defer)
+
+(use-package circadian
+  :load-path &quot;~/.emacs.d/config/circadian/&quot;
+  :ensure t
+  :config
+  (setq calendar-latitude 49.0)
+  (setq calendar-longitude 8.5)
+  (setq circadian-themes '((:sunrise . apropospriate-light)
+                           (:sunset  . nord)))
+  (circadian-setup))
+</code></pre>
+<hr/>
+<h3 id="hooks">Hooks</h3>
+<p><strong>circadian</strong> provides two hooks:</p>
+<ul>
+<li><code>circadian-before-load-theme-hook</code></li>
+<li><code>circadian-after-load-theme-hook</code></li>
+</ul>
+<p>e.g. I like to override any themes cursor color to a very bright color via:</p>
+<pre><code>(add-hook 'circadian-after-load-theme-hook
+          #'(lambda (theme)
+              ;; Line numbers appearance
+              (setq linum-format 'linum-format-func)
+              ;; Cursor
+              (set-default 'cursor-type 'box)
+              (set-cursor-color &quot;#F52503&quot;)))
+</code></pre>
+</div></html>

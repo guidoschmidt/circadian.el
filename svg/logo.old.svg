@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" id="Layer_1"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     x="0px"
+     y="0px"
+	   viewBox="0 0 242.5 242.5"
+     style="enable-background:new 0 0 242.5 242.5;"
+     xml:space="preserve">
+  <style type="text/css">
+    svg {
+    }
+    @keyframes rotate {
+    0% {
+    transform: rotate(0deg);
+    }
+    100% {
+    transform: rotate(360deg);
+    }
+    }
+
+    .arc-night,
+    .arc-day {
+    transform-origin: 52% 52%;
+    animation: rotate 280s linear;
+    animation-iteration-count: infinite;
+    }
+
+	  .group-moon,
+    .group-sun{
+    transform-origin: 52% 52%;
+    animation: rotate 260s linear;
+    animation-iteration-count: infinite;
+
+    }
+    .moon {
+    fill:url(#gradient-moon);
+    animation: rotate 360s linear;
+    animation-direction: reverse;
+    transform-origin: 74.6% 76.7%;
+    animation-iteration-count: infinite;
+    }
+    .st4 {
+    
+    fill:url(#SVGID_2_);
+    }
+	  .sun{
+    fill:url(#gradient-sun);
+    }
+  </style>
+  <g>
+	  <path d="M66.6,203.2c-17.8-13.6-30.8-33.1-36.1-55.6"
+          class="arc-night"
+          fill="none"
+          stroke="#3C1944"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10" />
+	  <radialGradient id="gradient-night"
+                    cx="175"
+                    cy="140.3611"
+                    r="71.4818"
+                    gradientUnits="userSpaceOnUse">
+		  <stop  offset="0" style="stop-color:#0F0324"/>
+		  <stop  offset="1" style="stop-color:#3D0A36"/>
+	  </radialGradient>
+	  <path class="arc-night"
+          fill="none"
+          stroke="url(#gradient-night)"
+          stroke-width="7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+          d="M196.8,57.5C213.6,75.1,224,99,224,125.3c0,54.1-43.9,98-98,98" />
+	  <path class="arc-day"
+          fill="none"
+          stroke="#ED0028"
+          stroke-width="5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-miterlimit="10"
+          d="M28,125.3c0-4.4,0.3-8.7,0.9-13c6.4-48,47.4-85,97.1-85c21.1,0,40.6,6.6,56.5,17.9" />
+
+	  <g class="group-moon">
+		  <g>
+				<radialGradient id="SVGID_2_"
+                        cx="160.5645"
+                        cy="131.2922"
+                        r="270.2828"
+                        gradientTransform="matrix(0.7071 0.7071 -0.7071 0.7071 166.0147 -75.795)"
+                        gradientUnits="userSpaceOnUse">
+				  <stop  offset="0" style="stop-color:#0F0324"/>
+				  <stop  offset="1" style="stop-color:#FF31BA"/>
+			  </radialGradient>
+			  <circle class="st4 circle-moon"
+                cx="179.5"
+                cy="184.8"
+                r="40"/>
+		  </g>
+		  <g>
+				<radialGradient id="gradient-moon"
+                        cx="204.5849"
+                        cy="129.2688"
+                        r="171.0842"
+                        gradientTransform="matrix(0.7071 0.7071 -0.7071 0.7071 144.9939 -77.0462)"
+                        gradientUnits="userSpaceOnUse">
+				  <stop  offset="0" style="stop-color:#DFEAE6"/>
+				  <stop  offset="2.007663e-03" style="stop-color:#DFEAE6"/>
+				  <stop  offset="0.3061" style="stop-color:#F1F6E8"/>
+				  <stop  offset="0.6287" style="stop-color:#FCFDE9"/>
+				  <stop  offset="1" style="stop-color:#FFFFE9"/>
+			  </radialGradient>
+			  <path class="moon"
+              d="M202.6,166.9c-2.6-2.9-5.6-5.2-8.9-6.8c-0.9-0.5-2,0.4-1.7,1.4c2.7,9.7,0.2,20.6-7.4,28.2
+				         c-7.6,7.6-18.5,10.1-28.2,7.4c-1-0.3-1.9,0.8-1.4,1.7c1.4,2.8,3.2,5.4,5.5,7.7c11.6,11.6,30.5,11.3,41.7-0.7
+				         C212.2,195,212.4,178,202.6,166.9z"/>
+		  </g>
+	  </g>
+	  <g class="group-sun">
+		  <g>
+			  <radialGradient id="gradient-sun"
+                        cx="25.2958"
+                        cy="14.3446"
+                        r="270.2828"
+                        gradientUnits="userSpaceOnUse">
+				  <stop  offset="0" style="stop-color:#FFC200"/>
+				  <stop  offset="1" style="stop-color:#FF0014"/>
+			  </radialGradient>
+			  <circle class="sun" cx="58.5" cy="57.8" r="40"/>
+		  </g>
+	  </g>
+  </g>
+</svg>

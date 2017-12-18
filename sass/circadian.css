@@ -1,0 +1,171 @@
+/* Settings - variables, config-switches */
+/* Tools - mixins and functions */
+/* Generic - ground-zero styling (normalize, reset) */
+@import url("https://fonts.googleapis.com/css?family=Overpass+Mono:400,700|Quicksand:500,700");
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before,
+blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+/* Base - unclassed HTML element styles */
+body,
+html {
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  font-family: 'Quicksand', sans-serif;
+  min-height: 100vh;
+  line-height: 1.6rem;
+  background: #f0f0ec; }
+  @media screen and (min-width: 599px) {
+    body,
+    html {
+      font-size: calc(14px + (10) * calc((100vw - 599px) / 1201)); } }
+  @media screen and (min-width: 1800px) {
+    body,
+    html {
+      font-size: 24px; } }
+
+body {
+  margin-top: 120px; }
+
+nav {
+  display: flex;
+  justify-content: center; }
+  nav a {
+    margin: 0 5px;
+    width: 150px;
+    text-align: center; }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: bold;
+  margin-bottom: 0.75em; }
+  h1 a,
+  h2 a,
+  h3 a,
+  h4 a,
+  h5 a,
+  h6 a {
+    background: transparent;
+    padding: 0; }
+
+h1 {
+  font-size: 4.125em;
+  color: #321269; }
+
+h2 {
+  font-size: 1.563em; }
+
+h3 {
+  font-size: 1.24em;
+  text-align: center;
+  margin-top: 6rem;
+  text-transform: uppercase; }
+
+h5 {
+  margin-top: 3.75rem; }
+
+b, strong {
+  font-weight: bold; }
+
+a {
+  text-decoration: none;
+  background: #181818;
+  color: white;
+  padding: 7px;
+  border-radius: 3px;
+  transition: background 742ms ease; }
+  a:hover {
+    background: #ed0028; }
+
+pre {
+  margin-top: 1rem; }
+
+code {
+  font-size: 0.85em;
+  background: transparent;
+  font-family: 'Overpass Mono', monospace; }
+
+small {
+  font-size: 0.6875em;
+  line-height: 1.2; }
+
+sup {
+  font-size: 0.85em;
+  position: relative;
+  bottom: 0.5rem; }
+
+em, i {
+  font-style: italic; }
+
+hr {
+  width: 33%;
+  border: 0;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.75);
+  margin: 4rem auto; }
+
+/* Components - UI-chunks (more complex components) */
+.logo {
+  margin: 1rem auto 2rem; }
+
+.content {
+  margin: 0 auto;
+  margin-bottom: 120px;
+  width: 80%;
+  max-width: 75ch;
+  background: #f0f0ec; }
+  @media screen and (min-width: 600px) {
+    .content {
+      width: 512px; } }
+  @media screen and (min-width: 900px) {
+    .content {
+      width: 726px; } }
+  @media screen and (min-width: 1800px) {
+    .content {
+      width: 1048px; } }

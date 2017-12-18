@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300px" height="300px" viewBox="0 0 300 300" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <style>
+    @keyframes rotate {
+    0% {
+    transform: rotate(0deg);
+    }
+    100% {
+    transform: rotate(360deg);
+    }
+    }
+
+    .sun {
+    transform-origin: 52% 52%;
+    animation: rotate 260s linear;
+    animation-iteration-count: infinite;
+    }
+  </style>
+  <defs>
+    <radialGradient cx="50%" cy="49.976538%" fx="50%" fy="49.976538%" r="72.9406122%" gradientTransform="translate(0.500000,0.499765),scale(1.000000,0.591074),translate(-0.500000,-0.499765)" id="radialGradient-1">
+      <stop stop-color="#0F0324" offset="0%"></stop>
+      <stop stop-color="#3D0A36" offset="100%"></stop>
+    </radialGradient>
+    <radialGradient cx="59.0164292%" cy="-17.7789093%" fx="59.0164292%" fy="-17.7789093%" r="337.8535%" id="radialGradient-2">
+      <stop stop-color="#0F0324" offset="0%"></stop>
+      <stop stop-color="#FF31BA" offset="100%"></stop>
+    </radialGradient>
+    <radialGradient cx="78.9394763%" cy="-1.70003204%" fx="78.9394763%" fy="-1.70003204%" r="311.236777%" gradientTransform="translate(0.789395,-0.017000),scale(1.000000,0.998596),translate(-0.789395,0.017000)" id="radialGradient-3">
+      <stop stop-color="#DFEAE6" offset="0%"></stop>
+      <stop stop-color="#DFEAE6" offset="0.2007663%"></stop>
+      <stop stop-color="#F1F6E8" offset="30.61%"></stop>
+      <stop stop-color="#FCFDE9" offset="62.87%"></stop>
+      <stop stop-color="#FFFFE9" offset="100%"></stop>
+    </radialGradient>
+    <radialGradient cx="8.49475%" cy="-4.31925%" fx="8.49475%" fy="-4.31925%" r="337.8535%" id="radialGradient-4">
+      <stop stop-color="#FFC200" offset="0%"></stop>
+      <stop stop-color="#FF0014" offset="100%"></stop>
+    </radialGradient>
+  </defs>
+  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="Artboard">
+      <g id="group-arcs" transform="translate(52.000000, 52.000000)" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M38.6,176.2 C20.8,162.6 7.8,143.1 2.5,120.6" id="arc-night" stroke="#3C1944" stroke-width="4"></path>
+        <path d="M168.8,30.5 C185.6,48.1 196,72 196,98.3 C196,152.4 152.1,196.3 98,196.3" id="arc-moon" stroke="url(#radialGradient-1)" stroke-width="7"></path>
+        <path d="M0,98.3 C0,93.9 0.3,89.6 0.9,85.3 C7.3,37.3 48.3,0.3 98,0.3 C119.1,0.3 138.6,6.9 154.5,18.2" id="arc-sun" stroke="#ED0028" stroke-width="5"></path>
+      </g>
+      <g id="group-moon" transform="translate(168.000000, 173.000000)" fill-rule="nonzero">
+        <circle id="circle-moon" fill="url(#radialGradient-2)" cx="40.5" cy="40.8" r="40"></circle>
+        <path d="M63.6,22.9 C61,20 58,17.7 54.7,16.1 C53.8,15.6 52.7,16.5 53,17.5 C55.7,27.2 53.2,38.1 45.6,45.7 C38,53.3 27.1,55.8 17.4,53.1 C16.4,52.8 15.5,53.9 16,54.8 C17.4,57.6 19.2,60.2 21.5,62.5 C33.1,74.1 52,73.8 63.2,61.8 C73.2,51 73.4,34 63.6,22.9 Z" id="moon" fill="url(#radialGradient-3)"></path>
+      </g>
+      <circle id="sun" fill="url(#radialGradient-4)" fill-rule="nonzero" cx="87.5" cy="86.8" r="40"></circle>
+    </g>
+  </g>
+</svg>

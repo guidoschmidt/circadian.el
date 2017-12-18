@@ -11,7 +11,7 @@
 <br>
 <img src="logo.png" alt="Logo"/>
 
-<h1 align="center">circadian</h1>
+<h1 align="center"><a href="https://guidoschmidt.github.io/circadian.el" target="_blank">circadian</a></h1>
 <h3 align="center">Theme-switching for Emacs based on daytime</h3>
 </p>
 

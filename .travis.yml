@@ -1,5 +1,8 @@
 language: emacs-lisp
-sudo: false
+
+# See https://github.com/flycheck/emacs-travis/issues/13
+sudo: required
+
 cache:
   - directories:
       # Cache stable Emacs binaries (saves 1min per job)
@@ -18,6 +21,9 @@ env:
   - EMACS_VERSION=25.3
   - EMACS_VERSION=snapshot
 before_install:
+  - sudo apt-add-repository ppa:ubuntu-elisp/ppa
+  - sudo apt-get update
+  - sudo apt-get install emacs-snapshot emacs-snapshot-el
   # Configure $PATH: Executables are installed to $HOME/bin
   - export PATH="$HOME/bin:$PATH"
   # Download the makefile to emacs-travis.mk

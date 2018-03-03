@@ -11,7 +11,7 @@
 <br>
 <img src="logo.png" alt="Logo"/>
 
-<h1 align="center">circadian</h1>
+<h1 align="center"><a href="https://guidoschmidt.github.io/circadian.el" target="_blank">circadian</a></h1>
 <h3 align="center">Theme-switching for Emacs based on daytime</h3>
 </p>
 
@@ -45,7 +45,6 @@ to use `:defer` keyword. Omitting it may lead to broken colors
 (use-package nyx-theme :ensure :defer)
 
 (use-package circadian
-  :load-path "~/.emacs.d/config/circadian/"
   :ensure t
   :config
   (setq circadian-themes '(("8:00" . hemera)
@@ -63,7 +62,6 @@ Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https
 (use-package nord-theme :ensure :defer)
 
 (use-package circadian
-  :load-path "~/.emacs.d/config/circadian/"
   :ensure t
   :config
   (setq calendar-latitude 49.0)

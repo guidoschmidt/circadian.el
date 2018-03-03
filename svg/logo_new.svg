@@ -9,7 +9,6 @@
     transform: rotate(360deg);
     }
     }
-
     .sun {
     transform-origin: 52% 52%;
     animation: rotate 260s linear;

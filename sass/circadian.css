@@ -60,11 +60,11 @@ html {
   @media screen and (min-width: 599px) {
     body,
     html {
-      font-size: calc(16px + (16) * calc((100vw - 599px) / 1201)); } }
+      font-size: calc(16px + (8) * calc((100vw - 599px) / 1201)); } }
   @media screen and (min-width: 1800px) {
     body,
     html {
-      font-size: 32px; } }
+      font-size: 24px; } }
 
 body {
   margin-top: 120px; }
@@ -168,3 +168,23 @@ hr {
   @media screen and (min-width: 1800px) {
     .content {
       width: 1048px; } }
+
+.github-corner {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 80px;
+  height: 80px; }
+  .github-corner:hover {
+    background: transparent; }
+  .github-corner svg {
+    fill: #151513;
+    color: #fff;
+    position: absolute;
+    top: 0;
+    border: 0;
+    right: 0; }

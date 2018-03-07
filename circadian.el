@@ -3,10 +3,10 @@
 ;; Copyright (C) 2017 Guido Schmidt
 
 ;; Author: Guido Schmidt
-;; Maintainer: Guido Schmidt <guido.schmidt.2912@gmail.com>
+;; Maintainer: Guido Schmidt <git@guidoschmidt.cc>
 ;; URL: https://github.com/GuidoSchmidt/circadian
 ;; Version: 0.3.1
-;; Keywords: circadian, themes
+;; Keywords: themes
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This file is part of GNU Emacs.
@@ -123,7 +123,7 @@
         (circadian-enable-theme theme)))))
 
 ;; --- Sunset-sunrise
-(defun clean-string (string)
+(defun circadian-clean-string (string)
   "Clean Emacs' STRING derived from `sunset-sunrise' result."
   (replace-regexp-in-string " " "" (replace-regexp-in-string
                                     "sun.[A-za-z]+" ""
@@ -133,12 +133,13 @@
 
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
-  (clean-string
+  (circadian-clean-string
    (cl-first (split-string (sunrise-sunset) ","))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
-  (let ((sunset-string (clean-string (cl-second (split-string (sunrise-sunset) ",")))))
+  (let ((sunset-string (circadian-clean-string
+                        (cl-second (split-string (sunrise-sunset) ",")))))
     (replace-regexp-in-string " " "" (replace-regexp-in-string
                                       "at.+" ""
                                       sunset-string))))

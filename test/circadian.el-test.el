@@ -7,8 +7,6 @@
 
 (load (expand-file-name "circadian.el" default-directory))
 
-
-
 (ert-deftest test-circadian-filter-themes ()
   "Test filtering of `circadian-themes' list.`"
   (print "-> TEST: circadian-filter-themes")
@@ -106,4 +104,6 @@
   (setq circadian-themes '(("8:15" . wombat)
                            ("9:00" . tango)))
   (mapc 'circadian-mapc circadian-themes))
+
+(provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

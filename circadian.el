@@ -59,12 +59,13 @@
   :type 'alist
   :group 'circadian)
 
-(defun circadian-enable-theme (theme)
+(defun circadian-enable-theme (theme &optional no-confirm no-enable)
   "Clear previous `custom-enabled-themes' and load THEME."
   (mapc #'disable-theme custom-enabled-themes)
   (run-hook-with-args 'circadian-before-load-theme-hook theme)
-  (load-theme theme t)
+  (enable-theme theme)
   (run-hook-with-args 'circadian-after-load-theme-hook theme))
+(advice-add 'load-theme :after #'circadian-enable-theme)
 
 (defun circadian-mapc (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."

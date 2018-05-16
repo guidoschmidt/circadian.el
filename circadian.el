@@ -61,10 +61,13 @@
 
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
-  (mapc #'disable-theme custom-enabled-themes)
-  (run-hook-with-args 'circadian-before-load-theme-hook theme)
-  (load-theme theme t)
-  (run-hook-with-args 'circadian-after-load-theme-hook theme))
+  (condition-case nil
+      (progn
+        (mapc #'disable-theme custom-enabled-themes)
+        (run-hook-with-args 'circadian-before-load-theme-hook theme)
+        (load-theme theme t)
+        (run-hook-with-args 'circadian-after-load-theme-hook theme))
+    (error "Problem loading theme %s" theme)))
 
 (defun circadian-mapc (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."

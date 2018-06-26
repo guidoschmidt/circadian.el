@@ -171,9 +171,15 @@
 (defun circadian-match-sun (input)
   "Match INPUT to a case for setting up timers."
   (cond ((cl-equalp input :sunrise)
-         (circadian-parse-time-string (circadian-sunrise)))
+         (let  ((sunrise (circadian-sunrise)))
+           (if (equal sunrise "not")
+               (error "Could not get valid sunset time — check your time zone settings."))
+           (circadian-parse-time-string sunrise)))
         ((cl-equalp input :sunset)
-         (circadian-parse-time-string (circadian-sunset)))
+         (let ((sunset (circadian-sunset)))
+           (if (equal sunset "on")
+               (error "Could not get valid sunset time — check your time zone settings."))
+           (circadian-parse-time-string sunset)))
         ((stringp input)
          input)))
 

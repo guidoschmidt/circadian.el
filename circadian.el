@@ -42,6 +42,7 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'solar)
 
 (defcustom circadian-before-load-theme-hook nil
   "Functions to run before the theme is changed."
@@ -77,35 +78,15 @@
       (run-at-time time repeat-after 'circadian-enable-theme theme))))
 
 ;;; --- TIME COMPARISONS
-(defun circadian-time-string-from-list (time-list)
-  "Concat list items from TIME-LIST to a time string separated by ':'."
-  (mapconcat 'identity time-list ":"))
-
-(defun circadian-now-time-string ()
-  "Get the current time as string in the format 'HH:MM'."
-  (let ((only-time (split-string (cl-fourth (split-string (current-time-string))) ":")))
-    (circadian-time-string-from-list (butlast only-time 1))))
-
-(defun circadian-compare-hours (hour-a hour-b)
-  "Compare two hours HOUR-A and HOUR-B."
-  (> hour-a hour-b))
-
-(defun circadian-compare-minutes (min-a min-b)
-  "Compare two minutes MIN-A and MIN-B."
-  (>= min-a min-b))
+(defun circadian-now-time ()
+  "Get the current time as string in the format (HH MM)."
+  (reverse (cl-subseq (decode-time) 1 3)))
 
 (defun circadian-a-earlier-b-p (time-a time-b)
   "Compare to time strings TIME-A and TIME-B by hour and minutes."
-  (let ((parsed-time-a (parse-time-string time-a))
-        (parsed-time-b (parse-time-string time-b)))
-    (let ((hour-a (cl-third parsed-time-a))
-          (hour-b (cl-third parsed-time-b))
-          (minute-a (cl-second parsed-time-a))
-          (minute-b (cl-second parsed-time-b)))
-      (cond ((cl-equalp hour-b hour-a)
-             (circadian-compare-minutes minute-b minute-a))
-            (t (circadian-compare-hours hour-b hour-a))))))
-
+  (or (and (= (cl-first time-a) (cl-first time-b))
+           (<= (cl-second time-a) (cl-second time-b)))
+      (< (cl-first time-a) (cl-first time-b))))
 
 (defun circadian-filter-inactivate-themes (theme-list now-time)
   "Filter THEME-LIST to consist of themes that are due NOW-TIME."
@@ -119,63 +100,36 @@
 `circadian-themes' is expected to be sorted by time for now."
   (let ((entry (cl-first (last (circadian-filter-inactivate-themes
                                 circadian-themes
-                                (circadian-now-time-string))))))
+                                (circadian-now-time))))))
     (let ((theme (cdr entry)))
       (if (equal theme nil)
           (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
         (circadian-enable-theme theme)))))
 
 ;; --- Sunset-sunrise
-(defun circadian-clean-string (string)
-  "Clean Emacs' STRING derived from `sunset-sunrise' result."
-  (replace-regexp-in-string " " "" (replace-regexp-in-string
-                                    "sun.[A-za-z]+" ""
-                                    (replace-regexp-in-string
-                                     "(CEST)" ""
-                                     string))))
+(defun circadian--frac-to-time (f)
+  "Convert fractional time F to (HH MM)."
+  (let ((l (cl-floor f)))
+       (list (cl-first l)
+             (floor (* 60 (cl-second l))))))
 
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
-  (circadian-clean-string
-   (cl-first (split-string (sunrise-sunset) ","))))
+  (circadian--frac-to-time (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date))))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
-  (let ((sunset-string (circadian-clean-string
-                        (cl-second (split-string (sunrise-sunset) ",")))))
-    (replace-regexp-in-string " " "" (replace-regexp-in-string
-                                      "at.+" ""
-                                      sunset-string))))
+  (circadian--frac-to-time (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date))))))
 
-(defun circadian-12-to-24h-offset (string)
-  "Match STRING for am/am and return the offset to 24h system."
-  (cond ((string-match-p "am" string)
-         0)
-        ((string-match-p "pm" string)
-         12)
-        ;; default
-        (t 0)))
-
-(defun circadian-clear-12h-postfix (input)
-  "Remove am/pm post-fix from INPUT."
-  (replace-regexp-in-string ".m" "" input))
-
-(defun circadian-parse-time-string (input)
-  "Parse INPUT and return corrected 24h time string."
-  (let ((splitted (split-string input ":"))
-        (add-hour (circadian-12-to-24h-offset input)))
-    (let ((hours (string-to-number (cl-first splitted)))
-          (minutes (circadian-clear-12h-postfix (cl-second splitted))))
-      (concat (number-to-string (+ hours add-hour)) ":" minutes))))
+(defun circadian--string-to-time (input)
+  "Parse INPUT string to '(HH MM)."
+  (cl-map 'list #'string-to-number (split-string input ":")))
 
 (defun circadian-match-sun (input)
   "Match INPUT to a case for setting up timers."
-  (cond ((cl-equalp input :sunrise)
-         (circadian-parse-time-string (circadian-sunrise)))
-        ((cl-equalp input :sunset)
-         (circadian-parse-time-string (circadian-sunset)))
-        ((stringp input)
-         input)))
+  (cond ((cl-equalp input :sunrise) (circadian-sunrise))
+        ((cl-equalp input :sunset) (circadian-sunset))
+        ((stringp input) (circadian--string-to-time input))))
 
 ;;;###autoload
 (defun circadian-setup ()

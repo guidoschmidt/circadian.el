@@ -62,20 +62,27 @@
 
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
+  (mapc #'disable-theme custom-enabled-themes)
   (condition-case nil
       (progn
-        (mapc #'disable-theme custom-enabled-themes)
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
         (load-theme theme t)
+        (message "circadian.el — enabled %s" theme)
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "Problem loading theme %s" theme)))
 
 (defun circadian-mapc (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."
-  (let ((time (circadian-match-sun (cl-first entry))))
-    (let ((theme (cdr entry))
-          (repeat-after 86400))
-      (run-at-time time repeat-after 'circadian-enable-theme theme))))
+  (let ((time       (circadian-match-sun (cl-first entry)))
+        (24-hours   86400))
+    (let ((theme        (cdr entry))
+          (repeat-after 24-hours)
+          (at-hour      (number-to-string (cl-first time)))
+          (at-seconds   (number-to-string (cl-second time))))
+      (run-at-time (concat at-hour ":" at-seconds)
+                   repeat-after
+                   'circadian-enable-theme
+                   theme))))
 
 ;;; --- TIME COMPARISONS
 (defun circadian-now-time ()
@@ -98,13 +105,15 @@
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last.
 `circadian-themes' is expected to be sorted by time for now."
-  (let ((entry (cl-first (last (circadian-filter-inactivate-themes
-                                circadian-themes
-                                (circadian-now-time))))))
-    (let ((theme (cdr entry)))
-      (if (equal theme nil)
-          (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
-        (circadian-enable-theme theme)))))
+  (let ((past-themes (circadian-filter-inactivate-themes
+                        circadian-themes
+                        (circadian-now-time))))
+    ;; (print past-themes)
+   (let ((entry (cl-first (reverse past-themes))))
+     (let ((theme (cdr entry)))
+       (if (equal theme nil)
+           (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
+         (circadian-enable-theme theme))))))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)
@@ -134,8 +143,7 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapc 'circadian-mapc circadian-themes)
-  (circadian-activate-latest-theme))
+  (mapc 'circadian-mapc circadian-themes))
 
 (provide 'circadian)
 ;;; circadian.el ends here

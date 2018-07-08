@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <git@guidoschmidt.cc>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 0.3.1
+;; Version: 0.3.2
 ;; Keywords: themes
 ;; Package-Requires: ((emacs "24.4"))
 
@@ -71,15 +71,24 @@
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "Problem loading theme %s" theme)))
 
+(defun circadian--encode-time (hour min)
+  "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
+  (let ((now (decode-time)))
+    (let ((day (nth 3 now))
+          (month (nth 4 now))
+          (year (nth 5 now))
+          (zone (current-time-zone)))
+      (encode-time 0 min hour day month year zone))))
+
 (defun circadian-mapc (entry)
   "Map over `circadian-themes' to run a timer for each ENTRY."
   (let ((time       (circadian-match-sun (cl-first entry)))
         (24-hours   86400))
     (let ((theme        (cdr entry))
           (repeat-after 24-hours)
-          (at-hour      (number-to-string (cl-first time)))
-          (at-seconds   (number-to-string (cl-second time))))
-      (run-at-time (concat at-hour ":" at-seconds)
+          (run-at       (circadian--encode-time (cl-first time)
+                                                (cl-second time))))
+      (run-at-time run-at
                    repeat-after
                    'circadian-enable-theme
                    theme))))
@@ -103,7 +112,7 @@
                 theme-list))
 
 (defun circadian-activate-latest-theme ()
-  "Check which themes are overdue to be activated and load the last.
+  "Check which themes are overdue to be activated and load the last.)
 `circadian-themes' is expected to be sorted by time for now."
   (let ((past-themes (circadian-filter-inactivate-themes
                         circadian-themes
@@ -143,7 +152,8 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapc 'circadian-mapc circadian-themes))
+  (mapc 'circadian-mapc circadian-themes)
+  (circadian-activate-latest-theme))
 
 (provide 'circadian)
 ;;; circadian.el ends here

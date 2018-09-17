@@ -62,14 +62,15 @@
 
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
-  (mapc #'disable-theme custom-enabled-themes)
-  (condition-case nil
-      (progn
-        (run-hook-with-args 'circadian-before-load-theme-hook theme)
-        (load-theme theme t)
-        (message "circadian.el — enabled %s" theme)
-        (run-hook-with-args 'circadian-after-load-theme-hook theme))
-    (error "Problem loading theme %s" theme)))
+  (unless (equal (list theme) custom-enabled-themes)
+    (mapc #'disable-theme custom-enabled-themes)
+    (condition-case nil
+        (progn
+          (run-hook-with-args 'circadian-before-load-theme-hook theme)
+          (load-theme theme t)
+          (message "circadian.el — enabled %s" theme)
+          (run-hook-with-args 'circadian-after-load-theme-hook theme))
+      (error "Problem loading theme %s" theme))))
 
 (defun circadian--encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
@@ -80,23 +81,19 @@
           (zone (current-time-zone)))
       (encode-time 0 min hour day month year zone))))
 
-(defun circadian-mapc (entry)
-  "Map over `circadian-themes' to run a timer for each ENTRY."
-  (let ((time       (circadian-match-sun (cl-first entry)))
-        (24-hours   86400))
-    (let ((theme        (cdr entry))
-          (repeat-after 24-hours)
-          (run-at       (circadian--encode-time (cl-first time)
-                                                (cl-second time))))
-      (run-at-time run-at
-                   repeat-after
-                   'circadian-enable-theme
-                   theme))))
+(defun circadian-themes-parse ()
+  "Parse `circadian-themes' and sort by time."
+  (sort
+   (mapcar
+    (lambda (entry)
+      (cons (circadian-match-sun (cl-first entry)) (cdr entry)))
+    circadian-themes)
+   (lambda (a b) (circadian-a-earlier-b-p (car a) (car b)))))
 
 ;;; --- TIME COMPARISONS
 (defun circadian-now-time ()
-  "Get the current time as string in the format (HH MM)."
-  (reverse (cl-subseq (decode-time) 1 3)))
+  "Get the current time as string in the format (HH MM SS)."
+  (reverse (cl-subseq (decode-time) 0 3)))
 
 (defun circadian-a-earlier-b-p (time-a time-b)
   "Compare to time strings TIME-A and TIME-B by hour and minutes."
@@ -107,22 +104,27 @@
 (defun circadian-filter-inactivate-themes (theme-list now-time)
   "Filter THEME-LIST to consist of themes that are due NOW-TIME."
   (cl-remove-if (lambda (entry)
-                  (let ((theme-time (circadian-match-sun (cl-first entry))))
+                  (let ((theme-time (cl-first entry)))
                     (not (circadian-a-earlier-b-p theme-time now-time))))
                 theme-list))
 
 (defun circadian-activate-latest-theme ()
-  "Check which themes are overdue to be activated and load the last.)
-`circadian-themes' is expected to be sorted by time for now."
-  (let ((past-themes (circadian-filter-inactivate-themes
-                        circadian-themes
-                        (circadian-now-time))))
-    ;; (print past-themes)
-   (let ((entry (cl-first (reverse past-themes))))
-     (let ((theme (cdr entry)))
-       (if (equal theme nil)
-           (circadian-enable-theme (cdr (cl-first (last circadian-themes))))
-         (circadian-enable-theme theme))))))
+  "Check which themes are overdue to be activated and load the last."
+  (let* ((themes (circadian-themes-parse))
+         (now (circadian-now-time))
+         (past-themes (circadian-filter-inactivate-themes themes now))
+         (entry (car (last (or past-themes themes))))
+         (theme (cdr entry))
+         (next-entry (cadr (member entry themes)))
+         (next-time (if next-entry
+                        (circadian--encode-time
+                         (cl-first (cl-first next-entry))
+                         (cl-second (cl-first next-entry)))
+                      (+ (* (+ (- 23 (cl-first now)) (cl-first (cl-first (cl-first themes)))) 60 60)
+                         (* (+ (- 60 (cl-second now)) (cl-second (cl-first (cl-first themes)))) 60)))))
+    (circadian-enable-theme theme)
+    (cancel-function-timers #'circadian-activate-latest-theme)
+    (run-at-time next-time nil #'circadian-activate-latest-theme)))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)
@@ -152,7 +154,6 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (mapc 'circadian-mapc circadian-themes)
   (circadian-activate-latest-theme))
 
 (provide 'circadian)

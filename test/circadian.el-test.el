@@ -24,25 +24,26 @@
                            ("19:54" . adwaita)
                            ("21:12" . wombat)
                            ("23:59" . adwaita)))
+  (setq circadian-themes-parsed (circadian-themes-parse))
   (let ((time-now '(4 10)))
     (should (equal 0 (length (circadian-filter-inactivate-themes
-                              circadian-themes
+                              circadian-themes-parsed
                               time-now)))))
   (let ((time-now '(5 03)))
     (should (equal 1 (length (circadian-filter-inactivate-themes
-                              circadian-themes
+                              circadian-themes-parsed
                               time-now)))))
   (let ((time-now '(7 20)))
     (should (equal 2 (length (circadian-filter-inactivate-themes
-                              circadian-themes
+                              circadian-themes-parsed
                               time-now)))))
   (let ((time-now '(11 52)))
     (should (equal 4 (length (circadian-filter-inactivate-themes
-                              circadian-themes
+                              circadian-themes-parsed
                               time-now)))))
   (let ((time-now '(00 14)))
     (should (equal 0 (length (circadian-filter-inactivate-themes
-                              circadian-themes
+                              circadian-themes-parsed
                               time-now))))))
 
 
@@ -70,17 +71,18 @@
   (setq calendar-longitude 8.570925)
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset . adwaita)))
+  (setq circadian-themes-parsed (circadian-themes-parse))
   (with-mock
    (stub sunrise-sunset => "Sunrise 4:32am (CEST), sunset 4:24pm (CEST) at 8N, 49E (11:52 hrs daylight)")
    (should (equal 1 (length (circadian-filter-inactivate-themes
-                             circadian-themes
+                             circadian-themes-parsed
                              '(14 51)))))
    (with-mock
     (stub circadian-now-time-string => '(14 21))
     (circadian-activate-latest-theme)
     (should (equal 'wombat (cl-first custom-enabled-themes))))
    (should (equal 2 (length (circadian-filter-inactivate-themes
-                             circadian-themes
+                             circadian-themes-parsed
                              '(23 59)))))))
 
 
@@ -95,15 +97,6 @@
   (should (equal t (circadian-a-earlier-b-p '(7 50) '(7 51))))
   (should (equal nil (circadian-a-earlier-b-p '(19 20) '(19 19))))
   (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20)))))
-
-
-
-(ert-deftest test-circadian-mapc ()
-  ""
-  (print "-> TEST: circadian-mapc")
-  (setq circadian-themes '(("8:15" . wombat)
-                           ("9:00" . tango)))
-  (mapc 'circadian-mapc circadian-themes))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

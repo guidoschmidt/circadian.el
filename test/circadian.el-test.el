@@ -84,6 +84,7 @@
                              "23:59"))))))
 
 
+
 (ert-deftest test-circadian-sunrise-sunset-north-america ()
   "Test :sunrise and :sunset for north american calendar."
   (print "-> TEST: sunrise/sunset (New York Time Zone)")
@@ -93,8 +94,15 @@
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset . adwaita)))
   (with-mock
-   (stub circadian-now-time-string => "21:43")
-   (circadian-activate-latest-theme)))
+   (stub circadian-now-time-string => "00:43")
+   (circadian-activate-latest-theme)
+   (should (equal 'adwaita (cl-first custom-enabled-themes))))
+  (with-mock
+   (stub circadian-now-time-string => "12:43")
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes)))))
+
+
 
 
 (ert-deftest test-circadian-time-comparisons ()

@@ -96,3 +96,15 @@ e.g. I like to override any themes cursor color to a very bright color via:
 - Load themes by mode [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
 - Load themes by machine name [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
 - Load themes by wifi/location? [reddit.com/r/emacs](https://www.reddit.com/r/emacs/comments/72ukrx/theme_preferences/)
+
+---
+
+### Development
+
+Install Emacs [cask](https://github.com/cask/cask) environment. On macOS you
+canr use [homebrew](https://brew.sh/) with: `brew install cask`.
+
+0. Clone the circadian.el repository: `git clone git@github.com:guidoschmidt/circadian.el.git`
+1. `cd` into the git project directory with `cd circadian.el` and install
+   dependencies via `cask`
+2. Run test with [ert-runner](https://github.com/rejeep/ert-runner.el): `cask exec ert-runner`

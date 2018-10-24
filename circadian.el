@@ -63,6 +63,8 @@
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
   (unless (equal (list theme) custom-enabled-themes)
+    ;; Only load the argument theme, when `custom-enabled-themes'
+    ;; does not contain it.
     (mapc #'disable-theme custom-enabled-themes)
     (condition-case nil
         (progn

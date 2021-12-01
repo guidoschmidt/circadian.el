@@ -117,7 +117,8 @@
          (past-themes (circadian-filter-inactivate-themes themes now))
          (entry (car (last (or past-themes themes))))
          (theme (cdr entry))
-         (next-entry (cadr (member entry themes)))
+  (next-entry (or (cadr (member entry themes))
+    (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry)) (car themes))))
          (next-time (if next-entry
                         (circadian--encode-time
                          (cl-first (cl-first next-entry))

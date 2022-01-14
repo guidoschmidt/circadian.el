@@ -1,5 +1,9 @@
 language: emacs-lisp
 
+branches:
+  only:
+  - main
+
 # See https://github.com/flycheck/emacs-travis/issues/13
 sudo: required
 

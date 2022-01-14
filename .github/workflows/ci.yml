@@ -29,6 +29,9 @@ jobs:
         with:
           version: 'snapshot'
 
+      - name: Prepare testing
+        run: cask install
+
       - name: Run tests
         run: cask exec ert-runner
 

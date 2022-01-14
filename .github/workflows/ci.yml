@@ -1,6 +1,20 @@
+name: CI
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version:
+          - '26.1'
+          - '26.2'
+          - '26.3'
+          - '27.2'
+          - 'snapshot'
+        cask_version:
+          - '0.8.0'
+          - '0.8.4'
+          - 'snapshot'
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-python@v2
@@ -9,7 +23,7 @@ jobs:
           architecture: 'x64'
       - uses: purcell/setup-emacs@master
         with:
-          version: '27.2'
+          version: ${{ matrix.emacs_version }}
 
       - uses: conao3/setup-cask@master
         with:

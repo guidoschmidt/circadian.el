@@ -70,9 +70,11 @@
         (progn
           (run-hook-with-args 'circadian-before-load-theme-hook theme)
           (load-theme theme t)
-          (message "circadian.el — enabled %s" theme)
+          (let ((time (circadian-now-time)))
+            (message "circadian.el → Enabled %s theme @ %02d:%02d:%02d"
+                     theme (nth 0 time) (nth 1 time) (nth 2 time)))
           (run-hook-with-args 'circadian-after-load-theme-hook theme))
-      (error "Problem loading theme %s" theme))))
+      (error "ERROR: circadian.el → Problem loading theme %s" theme))))
 
 (defun circadian--encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
@@ -112,13 +114,15 @@
 
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last."
+  (interactive)
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
          (entry (car (last (or past-themes themes))))
          (theme (cdr entry))
          (next-entry (or (cadr (member entry themes))
-                         (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry)) (car themes))))
+                         (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
+                             (car themes))))
          (next-time (if next-entry
                         (circadian--encode-time
                          (cl-first (cl-first next-entry))
@@ -138,14 +142,22 @@
 
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
-  (circadian--frac-to-time (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date))))))
+  (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
+    (let ((sunrise-numeric (cl-first (cl-first solar-result))))
+      (if (equal nil sunrise-numeric)
+          (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+        (circadian--frac-to-time sunrise-numeric)))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
-  (circadian--frac-to-time (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date))))))
+  (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
+    (let ((sunset-numeric (cl-first (cl-second solar-result))))
+      (if (equal nil sunset-numeric)
+          (error "No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+        (circadian--frac-to-time sunset-numeric)))))
 
 (defun circadian--string-to-time (input)
-  "Parse INPUT string to '(HH MM)."
+  "Parse INPUT string to `(HH MM)'."
   (cl-map 'list #'string-to-number (split-string input ":")))
 
 (defun circadian-match-sun (input)
@@ -165,6 +177,7 @@
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
+  (interactive)
   (circadian-activate-latest-theme))
 
 (provide 'circadian)

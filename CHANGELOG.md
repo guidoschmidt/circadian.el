@@ -5,6 +5,9 @@
   loaded in `circadian-enable-theme`. `run-at-time` did fire when
   `circadian-setup` has already been overdue (e.g. during system hibernation). 
   Big kudos to @tangxinfa for the pull request.
+- Fix #25: fixes wrong behavior when using time strings
+- Fix #27: prompts error when (solar-sunrise-sunset (calendar-current-date))
+  returns nil for requsted sunrise/sunset times
 
 ### 0.3.2
 - Error messages in `circadian-match-sun` if sunset or sunrise could not be

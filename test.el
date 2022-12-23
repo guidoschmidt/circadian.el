@@ -128,16 +128,15 @@ B should be earlier than A
 
 
 
-;; (ert-deftest test-circadian-setup-benchmark ()
-;;   "Benchmark (circadian-setup)."
-;;   :expected-result :failed
-;;   (setq calendar-latitude 49)
-;;   (setq calendar-longitude 5)
-;;   (setq circadian-themes '((:sunrise . wombat)
-;;                            (:sunset  . tango)))
-;;   (let ((elapsed (benchmark-elapse (circadian-setup))))
-;;     (should (equal t (< elapsed 0.01)))
-;;     (print (concat "(circadian-setup) took " (format "%.10f seconds" elapsed)))))
+(ert-deftest test-circadian-setup-benchmark ()
+  "Benchmark (circadian-setup)."
+  (setq calendar-latitude 49)
+  (setq calendar-longitude 5)
+  (setq circadian-themes '((:sunrise . wombat)
+                           (:sunset  . tango)))
+  (let ((elapsed (benchmark-elapse (circadian-setup))))
+    (should (equal t (< elapsed 0.05)))
+    (print (concat "(circadian-setup) took " (format "%.10f seconds" elapsed)))))
 
 
 
@@ -159,7 +158,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-sunrise-sunset
                      test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
-                     ;; test-circadian-setup-benchmark
+                     test-circadian-setup-benchmark
                      test-circadian-invalid-solar-sunrise-sunset))
 
 (provide 'circadian.el-test)

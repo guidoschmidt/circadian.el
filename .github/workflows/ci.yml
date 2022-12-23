@@ -30,4 +30,4 @@ jobs:
           version: snapshot
       - run: echo "$HOME/.cask/bin" >> $GITHUB_PATH
       - run: make compile
-      - run: make test
+      - run: cask emacs --batch -L . -L test -l test/circadian.el-test.el -f ert-run-tests-batch

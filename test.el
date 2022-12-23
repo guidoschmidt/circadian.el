@@ -131,6 +131,7 @@ B should be earlier than A
 
 (ert-deftest test-circadian-setup-benchmark ()
   "Benchmark (circadian-setup)."
+  :expected-result :failed
   (setq calendar-latitude 49)
   (setq calendar-longitude 5)
   (setq circadian-themes '((:sunrise . wombat)

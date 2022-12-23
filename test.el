@@ -159,7 +159,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-sunrise-sunset
                      test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
-                     test-circadian-setup-benchmark
+                     ;; test-circadian-setup-benchmark
                      test-circadian-invalid-solar-sunrise-sunset))
 
 (provide 'circadian.el-test)

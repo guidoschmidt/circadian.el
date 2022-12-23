@@ -86,7 +86,6 @@
 (ert-deftest test-circadian-sunrise-sunset ()
   "Test :sunrise and :sunset keywords for theme switching.
 @TODO currently failing, needs a fix"
-  :expected-result :failed
   (setq calendar-latitude 49.329896)
   (setq calendar-longitude 8.570925)
   (setq circadian-themes '((:sunrise . wombat)

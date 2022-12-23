@@ -17,5 +17,5 @@ compile: cask
 
 .PHONY: test
 test: compile
-	cask emacs --batch -L . -L test -l test/circadian.el-test.el -f ert-run-tests-batch
+	cask emacs -batch -l ert -l test.el --eval "(ert-run-tests-batch-and-exit test-order)"
 

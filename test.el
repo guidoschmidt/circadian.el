@@ -97,7 +97,7 @@
     (circadian-activate-latest-theme)
     (should (equal 'wombat (cl-first custom-enabled-themes))))
 
-  (with-mock 
+  (with-mock
     (stub circadian-now-time-string => '(16 50 0))
     (circadian-activate-latest-theme)
     (should (equal 'adwaita (cl-first custom-enabled-themes)))))

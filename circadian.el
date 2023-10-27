@@ -166,12 +166,12 @@
          (let  ((sunrise (circadian-sunrise)))
            (if (equal sunrise "not")
                (error "Could not get valid sunset time — check your time zone settings"))
-           (circadian-sunrise)))
+           sunrise))
         ((cl-equalp input :sunset)
          (let ((sunset (circadian-sunset)))
            (if (equal sunset "on")
                (error "Could not get valid sunset time — check your time zone settings"))
-           (circadian-sunset)))
+           sunset))
         ((stringp input) (circadian--string-to-time input))))
 
 ;;;###autoload

@@ -88,10 +88,13 @@
 (defun circadian-themes-parse ()
   "Parse `circadian-themes' and sort by time."
   (sort
-   (mapcar
+   (seq-filter
     (lambda (entry)
-      (cons (circadian-match-sun (cl-first entry)) (cdr entry)))
-    circadian-themes)
+      (not (equal nil (cl-first entry))))
+    (mapcar
+     (lambda (entry)
+       (cons (circadian-match-sun (cl-first entry)) (cdr entry)))
+     circadian-themes))
    (lambda (a b) (circadian-a-earlier-b-p (car a) (car b)))))
 
 ;;; --- TIME COMPARISONS
@@ -140,21 +143,48 @@
        (list (cl-first l)
              (floor (* 60 (cl-second l))))))
 
+(defun circadian-check-calendar ()
+  "Check if either calendar-latitude or calendar-longitude is not set."
+  (if (or (equal nil calendar-latitude)
+          (equal nil calendar-longitude))
+      (print "calendar-longitude not set. Consider using fixed time strings, e.g.
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))
+or set calendar-latitude:
+    (setq calendar-latitude 48.0)
+      (setq calendar-longitude 2.35)"))
+
+  (cond ((equal nil calendar-latitude)
+         nil)
+        
+        ((equal nil calendar-longitude)
+         nil)
+        
+        (t)))
+
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
-  (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
-    (let ((sunrise-numeric (cl-first (cl-first solar-result))))
-      (if (equal nil sunrise-numeric)
-          (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
-        (circadian--frac-to-time sunrise-numeric)))))
+  (if (equal nil (circadian-check-calendar))
+      (progn
+        (print "Can not use :sunrise")
+        nil)
+    (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
+      (let ((sunrise-numeric (cl-first (cl-first solar-result))))
+        (if (equal nil sunrise-numeric)
+            (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (circadian--frac-to-time sunrise-numeric))))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
-  (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
-    (let ((sunset-numeric (cl-first (cl-second solar-result))))
-      (if (equal nil sunset-numeric)
-          (error "No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
-        (circadian--frac-to-time sunset-numeric)))))
+  (if (equal nil (circadian-check-calendar))
+      (progn
+        (print "Can not use :sunset")
+        nil)
+    (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
+      (let ((sunset-numeric (cl-first (cl-second solar-result))))
+        (if (equal nil sunset-numeric)
+            (error "No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (circadian--frac-to-time sunset-numeric))))))
 
 (defun circadian--string-to-time (input)
   "Parse INPUT string to `(HH MM)'."
@@ -164,14 +194,16 @@
   "Match INPUT to a case for setting up timers."
   (cond ((cl-equalp input :sunrise)
          (let  ((sunrise (circadian-sunrise)))
-           (if (equal sunrise "not")
-               (error "Could not get valid sunset time — check your time zone settings"))
+           (if (equal sunrise nil)
+               (print "Could not get valid sunset time — check your time zone settings"))
            sunrise))
+
         ((cl-equalp input :sunset)
          (let ((sunset (circadian-sunset)))
-           (if (equal sunset "on")
-               (error "Could not get valid sunset time — check your time zone settings"))
+           (if (equal sunset nil)
+               (print "Could not get valid sunset time — check your time zone settings"))
            sunset))
+
         ((stringp input) (circadian--string-to-time input))))
 
 ;;;###autoload

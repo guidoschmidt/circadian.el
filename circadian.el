@@ -148,30 +148,56 @@
 
 (defun circadian-check-calendar ()
   "Check if either calendar-latitude or calendar-longitude is not set."
-  (if (or (equal nil calendar-latitude)
-          (equal nil calendar-longitude))
-      (print "calendar-longitude not set. Consider using fixed time strings, e.g.
+  (if (equal nil calendar-latitude)
+      (message "calendar-latitude not set. Consider using fixed time strings, e.g.
+
 (setq circadian-themes '((\"9:00\" . wombat)
                          (\"20:00\") . tango))
+
 or set calendar-latitude:
-    (setq calendar-latitude 48.0)
-      (setq calendar-longitude 2.35)"))
+    (setq calendar-latitude 49.0)"))
+
+  (if (equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
+      (message "Could not get time for sunrise. Consider using fixed time strings, e.g.
+
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))"))
+
+  (if (equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
+      (message "Could not get time for sunset. Consider using fixed time strings, e.g.
+
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))"))
+
+  (if (equal nil calendar-longitude)
+      (message "calendar-longitude not set. Consider using fixed time strings, e.g.
+
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))
+
+or set calendar-longitude:
+    (setq calendar-longitude 8.5)"))
 
   (cond ((equal nil calendar-latitude)
          nil)
         
         ((equal nil calendar-longitude)
          nil)
+
+        ((equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
+         nil)
+
+        ((equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
+         nil)
         
         (t)))
 
 (defun circadian-sunrise ()
   "Get clean sunrise time string from Emacs' `sunset-sunrise'`."
-  (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
-    (let ((sunrise-numeric (cl-first (cl-first solar-result))))
-      (if (equal nil sunrise-numeric)
-          (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
-        (circadian--frac-to-time sunrise-numeric)))))
+  (let ((sunrise-numeric (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date))))))
+    (if (equal nil sunrise-numeric)
+        (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+      (circadian--frac-to-time sunrise-numeric))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."

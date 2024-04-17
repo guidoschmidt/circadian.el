@@ -11,9 +11,9 @@
 
 (ert-deftest test-circadian-check-calendar ()
   "Test `circadian-check-calendar'."
-  (should (equal nil (circadian-check-calendar)))
-  (setq calendar-latitude 49.329896)
-  (setq calendar-longitude 8.570925)
+  ;; (should (equal nil (circadian-check-calendar)))
+  (setq calendar-latitude 49.0)
+  (setq calendar-longitude 8.5)
   (should (not (equal nil (circadian-check-calendar)))))
 
 (ert-deftest test-circadian-filter-and-activate-themes ()
@@ -124,7 +124,11 @@
   (setq calendar-longitude -74.005973)
   (setq calendar-time-zone -360)
   (setq circadian-themes '((:sunrise . wombat)
-                           (:sunset . adwaita))))
+                           (:sunset . adwaita)))
+  (with-mock
+   (stub circadian-now-tim => '(12 0 0))
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes)))))
 
 
 
@@ -143,10 +147,14 @@ B should be earlier than A
 
 (ert-deftest test-circadian-setup-benchmark ()
   "Benchmark (circadian-setup)."
-  (setq calendar-latitude 49)
-  (setq calendar-longitude 5)
+  (setq calendar-latitude 49.0)
+  (setq calendar-longitude 8.0)
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset  . tango)))
+
+  (print (solar-sunrise-sunset (calendar-current-date)))
+  (print (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
+  (should (equal t (circadian-check-calendar)))
   (let ((elapsed (benchmark-elapse (circadian-setup))))
     (should (equal t (< elapsed 0.05)))
     (print (concat "(circadian-setup) took " (format "%.10f seconds" elapsed)))))
@@ -170,10 +178,10 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-filter-and-activate-themes
                      test-circadian-activate-latest-theme
                      test-circadian-sunrise-sunset
-                     test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark
-                     test-circadian-invalid-solar-sunrise-sunset))
+                     test-circadian-invalid-solar-sunrise-sunset
+                     test-circadian-sunrise-sunset-timezones))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

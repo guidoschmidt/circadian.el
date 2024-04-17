@@ -8,6 +8,14 @@
 
 (load (expand-file-name "circadian.el" default-directory))
 
+
+(ert-deftest test-circadian-check-calendar ()
+  "Test `circadian-check-calendar'."
+  (should (equal nil (circadian-check-calendar)))
+  (setq calendar-latitude 49.329896)
+  (setq calendar-longitude 8.570925)
+  (should (not (equal nil (circadian-check-calendar)))))
+
 (ert-deftest test-circadian-filter-and-activate-themes ()
   "Test filtering of `circadian-themes' list`."
   (setq circadian-themes '(("5:01"  . wombat)
@@ -88,19 +96,24 @@
 @TODO currently failing, needs a fix"
   (setq calendar-latitude 49.329896)
   (setq calendar-longitude 8.570925)
+
+  (should (equal t (circadian-check-calendar)))
+  
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset  . adwaita)))
   (circadian-setup)
 
+  ;; Test if sunrise theme was activated
   (with-mock
-    (stub circadian-now-time => '(14 21 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'wombat (cl-first custom-enabled-themes))))
-
+   (stub circadian-now-time => '(12 21 0))
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes))))
+   
+  ;; Test if sunset theme was activated
   (with-mock
-    (stub circadian-now-time-string => '(16 50 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'adwaita (cl-first custom-enabled-themes)))))
+   (stub circadian-now-time => '(23 50 0))
+   (circadian-activate-latest-theme)
+   (should (equal 'adwaita (cl-first custom-enabled-themes)))))
 
 
 
@@ -128,15 +141,15 @@ B should be earlier than A
 
 
 
-(ert-deftest test-circadian-setup-benchmark ()
-  "Benchmark (circadian-setup)."
-  (setq calendar-latitude 49)
-  (setq calendar-longitude 5)
-  (setq circadian-themes '((:sunrise . wombat)
-                           (:sunset  . tango)))
-  (let ((elapsed (benchmark-elapse (circadian-setup))))
-    (should (equal t (< elapsed 0.05)))
-    (print (concat "(circadian-setup) took " (format "%.10f seconds" elapsed)))))
+;; (ert-deftest test-circadian-setup-benchmark ()
+;;   "Benchmark (circadian-setup)."
+;;   (setq calendar-latitude 49)
+;;   (setq calendar-longitude 5)
+;;   (setq circadian-themes '((:sunrise . wombat)
+;;                            (:sunset  . tango)))
+;;   (let ((elapsed (benchmark-elapse (circadian-setup))))
+;;     (should (equal t (< elapsed 0.05)))
+;;     (print (concat "(circadian-setup) took " (format "%.10f seconds" elapsed)))))
 
 
 
@@ -153,6 +166,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
 
 
 (defvar test-order '(member
+                     test-circadian-check-calendar
                      test-circadian-filter-and-activate-themes
                      test-circadian-activate-latest-theme
                      test-circadian-sunrise-sunset

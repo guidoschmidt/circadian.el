@@ -86,7 +86,10 @@
       (encode-time 0 min hour day month year zone))))
 
 (defun circadian-themes-parse ()
-  "Parse `circadian-themes' and sort by time."
+  "Parse `circadian-themes', filter the list and sort it by time.
+Uses `circadian-check-calendar' to filter out entries which use `:sunrise'
+or `:sunset' if either `calendar-latitude' or `calendar-longitude' is not
+set and  and sort the final list by time."
   (sort
     (mapcar
      (lambda (entry)
@@ -125,7 +128,10 @@
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
          (entry (car (last (or past-themes themes))))
-         (theme (cdr entry))
+         (theme-or-theme-list (cdr entry))
+         (theme (if (listp theme-or-theme-list)
+                    (nth (random (length (cl-second theme-or-theme-list))) (cl-second theme-or-theme-list))
+                  theme-or-theme-list))
          (next-entry (or (cadr (member entry themes))
                          (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
                              (car themes))))
@@ -148,6 +154,7 @@
 
 (defun circadian-check-calendar ()
   "Check if either calendar-latitude or calendar-longitude is not set."
+  ;; 1. Check `calendar-latitude' ond message user if it's not set.
   (if (equal nil calendar-latitude)
       (message "calendar-latitude not set. Consider using fixed time strings, e.g.
 
@@ -157,18 +164,7 @@
 or set calendar-latitude:
     (setq calendar-latitude 49.0)"))
 
-  (if (equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
-      (message "Could not get time for sunrise. Consider using fixed time strings, e.g.
-
-(setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))"))
-
-  (if (equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
-      (message "Could not get time for sunset. Consider using fixed time strings, e.g.
-
-(setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))"))
-
+  ;; 2. Check `calendar-longitude' ond message user if it's not set.
   (if (equal nil calendar-longitude)
       (message "calendar-longitude not set. Consider using fixed time strings, e.g.
 
@@ -177,6 +173,20 @@ or set calendar-latitude:
 
 or set calendar-longitude:
     (setq calendar-longitude 8.5)"))
+
+  ;; 3. Check if  `solar-sunrise-sunset' does not return a valid time for sunrise
+  (if (equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
+      (message "Could not get time for sunrise. Consider using fixed time strings, e.g.
+
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))"))
+
+  ;; 4. Check if  `solar-sunrise-sunset' does not return a valid time for sunset
+  (if (equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
+      (message "Could not get time for sunset. Consider using fixed time strings, e.g.
+
+(setq circadian-themes '((\"9:00\" . wombat)
+                         (\"20:00\") . tango))"))
 
   (cond ((equal nil calendar-latitude)
          nil)

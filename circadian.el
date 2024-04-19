@@ -71,19 +71,19 @@
           (run-hook-with-args 'circadian-before-load-theme-hook theme)
           (load-theme theme t)
           (let ((time (circadian-now-time)))
-            (message "circadian.el → Enabled %s theme @ %02d:%02d:%02d"
+            (message "[circadian.el] → Enabled %s theme @ %02d:%02d:%02d"
                      theme (nth 0 time) (nth 1 time) (nth 2 time)))
           (run-hook-with-args 'circadian-after-load-theme-hook theme))
       (error "ERROR: circadian.el → Problem loading theme %s" theme))))
 
 (defun circadian--encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
-  (let ((now (decode-time)))
-    (let ((day (nth 3 now))
-          (month (nth 4 now))
-          (year (nth 5 now))
-          (zone (current-time-zone)))
-      (encode-time 0 min hour day month year zone))))
+  (let* ((now (decode-time))
+         (day (nth 3 now))
+         (month (nth 4 now))
+         (year (nth 5 now))
+         (zone (current-time-zone)))
+    (encode-time 0 min hour day month year zone)))
 
 (defun circadian-themes-parse ()
   "Parse `circadian-themes' and sort by time."
@@ -115,7 +115,7 @@
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last."
   (interactive)
-  (print "[circadian] Activate latest theme")
+  ;; (cancel-function-timers #'circadian-activate-latest-theme) ;
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -123,16 +123,18 @@
          (theme (cdr entry))
          (next-entry (or (cadr (member entry themes))
                          (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
-                             (car themes))))
-         (next-time (if next-entry
-                        (circadian--encode-time
-                         (cl-first (cl-first next-entry))
-                         (cl-second (cl-first next-entry)))
-                      (+ (* (+ (- 23 (cl-first now)) (cl-first (cl-first (cl-first themes)))) 60 60)
-                         (* (+ (- 60 (cl-second now)) (cl-second (cl-first (cl-first themes)))) 60)))))
-    (circadian-enable-theme theme)
-    (cancel-function-timers #'circadian-activate-latest-theme)
-    (run-at-time next-time nil #'circadian-activate-latest-theme)))
+                             (car themes)
+                           (cl-first past-themes))))
+         (next-time (circadian--encode-time
+                     (cl-first (cl-first next-entry))
+                     (cl-second (cl-first next-entry)))))
+    (unless (equal (list theme) custom-enabled-themes)
+      (circadian-enable-theme theme))
+    (let* ((time (decode-time (time-convert next-time 'list)))
+           (time-str (format "%02d:%02d:00" (nth 2 time) (nth 1 time))))
+      (message "[circadian.el] → Next run @ %02d:%02d:%02d"
+               (nth 2 time) (nth 1 time) (nth 0 time))
+      (run-at-time time-str nil #'circadian-activate-latest-theme))))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)

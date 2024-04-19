@@ -156,10 +156,10 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-filter-and-activate-themes
                      test-circadian-activate-latest-theme
                      test-circadian-sunrise-sunset
-                     test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark
-                     test-circadian-invalid-solar-sunrise-sunset))
+                     test-circadian-invalid-solar-sunrise-sunset
+                     test-circadian-sunrise-sunset-timezones))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

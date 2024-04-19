@@ -126,7 +126,7 @@
   (setq circadian-themes '((:sunrise . wombat)
                            (:sunset . adwaita)))
   (with-mock
-   (stub circadian-now-tim => '(12 0 0))
+   (stub circadian-now-time => '(12 0 0))
    (circadian-activate-latest-theme)
    (should (equal 'wombat (cl-first custom-enabled-themes)))))
 

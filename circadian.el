@@ -115,6 +115,7 @@
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last."
   (interactive)
+  (print "[circadian] Activate latest theme")
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))

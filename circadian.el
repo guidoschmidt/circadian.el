@@ -62,19 +62,18 @@
 
 (defun circadian-enable-theme (theme)
   "Clear previous `custom-enabled-themes' and load THEME."
-  (unless (equal (list theme) custom-enabled-themes)
-    ;; Only load the argument theme, when `custom-enabled-themes'
-    ;; does not contain it.
-    (mapc #'disable-theme custom-enabled-themes)
-    (condition-case nil
-        (progn
-          (run-hook-with-args 'circadian-before-load-theme-hook theme)
-          (load-theme theme t)
-          (let ((time (circadian-now-time)))
-            (message "[circadian.el] → Enabled %s theme @ %02d:%02d:%02d"
-                     theme (nth 0 time) (nth 1 time) (nth 2 time)))
-          (run-hook-with-args 'circadian-after-load-theme-hook theme))
-      (error "ERROR: circadian.el → Problem loading theme %s" theme))))
+  ;; Only load the argument theme, when `custom-enabled-themes'
+  ;; does not contain it.
+  (mapc #'disable-theme custom-enabled-themes)
+  (condition-case nil
+      (progn
+        (run-hook-with-args 'circadian-before-load-theme-hook theme)
+        (load-theme theme t)
+        (let ((time (circadian-now-time)))
+          (message "[circadian.el] → Enabled %s theme @ %02d:%02d:%02d"
+                   theme (nth 0 time) (nth 1 time) (nth 2 time)))
+        (run-hook-with-args 'circadian-after-load-theme-hook theme))
+    (error "ERROR: circadian.el → Problem loading theme %s" theme)))
 
 (defun circadian--encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."

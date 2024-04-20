@@ -86,21 +86,18 @@
 (ert-deftest test-circadian-sunrise-sunset ()
   "Test :sunrise and :sunset keywords for theme switching.
 @TODO currently failing, needs a fix"
-  (setq calendar-latitude 49.329896)
-  (setq calendar-longitude 8.570925)
-  (setq circadian-themes '((:sunrise . wombat)
-                           (:sunset  . adwaita)))
-  (circadian-setup)
-
   (with-mock
-    (stub circadian-now-time => '(14 21 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (setq calendar-latitude 49.329896)
+   (setq calendar-longitude 8.570925)
+   (setq circadian-themes '((:sunrise . adwaita)
+                            (:sunset  . wombat)))
+   (stub circadian-now-time => '(14 21 0))
+   (circadian-activate-latest-theme)
+   (should (equal 'adwaita (cl-first custom-enabled-themes)))
 
-  (with-mock
-    (stub circadian-now-time-string => '(16 50 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'adwaita (cl-first custom-enabled-themes)))))
+   (stub circadian-now-time => '(22 30 0))
+   (circadian-activate-latest-theme)
+   (should (equal 'wombat (cl-first custom-enabled-themes)))))
 
 
 
@@ -146,7 +143,7 @@ B should be earlier than A
 https://github.com/guidoschmidt/circadian.el/issues/27"
   (setq calendar-latitude 79.482623)
   (setq calendar-longitude 5.318703)
-  (setq circadian-themes '((:sunrise . wombat)
+  (setq circadian-themes '((:sunrise . adwaita)
                            (:sunset  . tango)))
   (circadian-setup))
 
@@ -156,10 +153,10 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-filter-and-activate-themes
                      test-circadian-activate-latest-theme
                      test-circadian-sunrise-sunset
-                     test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark
-                     test-circadian-invalid-solar-sunrise-sunset))
+                     test-circadian-invalid-solar-sunrise-sunset
+                     test-circadian-sunrise-sunset-timezones))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

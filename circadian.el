@@ -73,7 +73,7 @@
           (message "[circadian.el] → Enabled %s theme @ %02d:%02d:%02d"
                    theme (nth 0 time) (nth 1 time) (nth 2 time)))
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
-    (error "ERROR: circadian.el → Problem loading theme %s" theme)))
+    (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
 
 (defun circadian--encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
@@ -114,7 +114,7 @@
 (defun circadian-activate-latest-theme ()
   "Check which themes are overdue to be activated and load the last."
   (interactive)
-  ;; (cancel-function-timers #'circadian-activate-latest-theme) ;
+  (cancel-function-timers #'circadian-activate-latest-theme)
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -147,7 +147,7 @@
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunrise-numeric (cl-first (cl-first solar-result))))
       (if (equal nil sunrise-numeric)
-          (error "No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (error "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
         (circadian--frac-to-time sunrise-numeric)))))
 
 (defun circadian-sunset ()
@@ -155,7 +155,7 @@
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunset-numeric (cl-first (cl-second solar-result))))
       (if (equal nil sunset-numeric)
-          (error "No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (error "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
         (circadian--frac-to-time sunset-numeric)))))
 
 (defun circadian--string-to-time (input)
@@ -166,13 +166,13 @@
   "Match INPUT to a case for setting up timers."
   (cond ((cl-equalp input :sunrise)
          (let  ((sunrise (circadian-sunrise)))
-           (if (equal sunrise "not")
-               (error "Could not get valid sunset time — check your time zone settings"))
+           (if (equal sunrise nil)
+               (error "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
            sunrise))
         ((cl-equalp input :sunset)
          (let ((sunset (circadian-sunset)))
-           (if (equal sunset "on")
-               (error "Could not get valid sunset time — check your time zone settings"))
+           (if (equal sunset nil)
+               (error "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
            sunset))
         ((stringp input) (circadian--string-to-time input))))
 

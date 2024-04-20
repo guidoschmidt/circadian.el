@@ -139,15 +139,13 @@ set and  and sort the final list by time."
          (next-time (circadian--encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
-    (print now)
-    (print theme)
     (unless (equal (list theme) custom-enabled-themes)
-      (circadian-enable-theme theme))
-    (let* ((time (decode-time (time-convert next-time 'list)))
+      (circadian-enable-theme theme)
+      (let* ((time (decode-time (time-convert next-time 'list)))
            (time-str (format "%02d:%02d:00" (nth 2 time) (nth 1 time))))
       (message "[circadian.el] → Next run @ %02d:%02d:%02d"
                (nth 2 time) (nth 1 time) (nth 0 time))
-      (run-at-time time-str nil #'circadian-activate-latest-theme))))
+      (run-at-time time-str nil #'circadian-activate-latest-theme)))))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)

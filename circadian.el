@@ -120,10 +120,8 @@ set and  and sort the final list by time."
                     (not (circadian-a-earlier-b-p theme-time now-time))))
                 theme-list))
 
-(defun circadian-activate-latest-theme ()
-  "Check which themes are overdue to be activated and load the last."
-  (interactive)
-  (cancel-function-timers #'circadian-activate-latest-theme)
+(defun circadian-activate-current ()
+  "Check which theme should be active currently and return a time for the next run."
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -140,12 +138,20 @@ set and  and sort the final list by time."
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
     (unless (equal (list theme) custom-enabled-themes)
-      (circadian-enable-theme theme)
-      (let* ((time (decode-time (time-convert next-time 'list)))
-           (time-str (format "%02d:%02d:00" (nth 2 time) (nth 1 time))))
-      (message "[circadian.el] → Next run @ %02d:%02d:%02d"
-               (nth 2 time) (nth 1 time) (nth 0 time))
-      (run-at-time time-str nil #'circadian-activate-latest-theme)))))
+      (circadian-enable-theme theme))
+    next-time))
+
+
+(defun circadian-activate-and-schedule ()
+  "Check which themes are overdue to be activated and load the last."
+  (interactive)
+  (cancel-function-timers #'circadian-activate-current)
+  (let* ((next-time (circadian-activate-current))
+         (time (decode-time (time-convert next-time 'list)))
+         (time-str (format "%02d:%02d:00" (nth 2 time) (nth 1 time))))
+    (message "[circadian.el] → Next run @ %02d:%02d:%02d"
+             (nth 2 time) (nth 1 time) (nth 0 time))
+    (run-at-time time-str nil #'circadian-activate-current)))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)

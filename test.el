@@ -15,6 +15,7 @@
                            ("23:59" . adwaita)))
   (setq circadian-themes-parsed (circadian-themes-parse))
 
+
   ;; Before 5:01
   (let ((time-now '(4 10)))
     (should (equal 0 (length (circadian-filter-inactivate-themes
@@ -23,7 +24,8 @@
   (with-mock
    (stub circadian-now-time => '(5 0 0))
    (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes))))
+   
+   (should (equal (list 'adwaita) custom-enabled-themes)))
 
   ;; After 5:01, before 14:47
   (let ((time-now '(5 2)))
@@ -33,7 +35,7 @@
   (with-mock
    (stub circadian-now-time => '(5 2 0))
    (circadian-activate-latest-theme)
-   (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (should (equal (list 'wombat) custom-enabled-themes)))
 
   ;; After 14:47, before 23:59
   (let ((time-now '(14 47)))
@@ -43,7 +45,7 @@
   (with-mock
    (stub circadian-now-time => '(14 47 1))
    (circadian-activate-latest-theme)
-   (should (equal 'tango (cl-first custom-enabled-themes))))
+   (should (equal (list 'tango) custom-enabled-themes)))
 
   ;; After 23:59
   (let ((time-now '(23 59)))
@@ -53,7 +55,7 @@
   (with-mock
    (stub circadian-now-time => '(23 59 15))
    (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes))))
+   (should (equal (list 'adwaita) custom-enabled-themes)))
 
   ;; Surpassing midnight
   (let ((time-now '(0 2)))
@@ -63,7 +65,7 @@
   (with-mock
    (stub circadian-now-time => '(0 2 10))
    (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes)))))
+   (should (equal (list 'adwaita) custom-enabled-themes))))
 
 
 
@@ -75,11 +77,11 @@
   (with-mock
    (stub circadian-now-time => '(7 21 0))
    (circadian-activate-latest-theme)
-   (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (should (equal (list 'wombat) custom-enabled-themes)))
   (with-mock
    (stub circadian-now-time => '(17 0 0))
    (circadian-activate-latest-theme)
-   (should (equal 'tango (cl-first custom-enabled-themes)))))
+   (should (equal (list 'tango) custom-enabled-themes))))
 
 
 
@@ -156,7 +158,8 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark
                      test-circadian-invalid-solar-sunrise-sunset
-                     test-circadian-sunrise-sunset-timezones))
+                     test-circadian-sunrise-sunset-timezones
+                     ))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

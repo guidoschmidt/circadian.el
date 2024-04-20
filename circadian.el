@@ -139,6 +139,8 @@ set and  and sort the final list by time."
          (next-time (circadian--encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
+    (print now)
+    (print theme)
     (unless (equal (list theme) custom-enabled-themes)
       (circadian-enable-theme theme))
     (let* ((time (decode-time (time-convert next-time 'list)))
@@ -161,7 +163,7 @@ set and  and sort the final list by time."
       (message "calendar-latitude not set. Consider using fixed time strings, e.g.
 
 (setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))
+                         (\"20:00\" . tango))
 
 or set calendar-latitude:
     (setq calendar-latitude 49.0)"))
@@ -171,36 +173,18 @@ or set calendar-latitude:
       (message "calendar-longitude not set. Consider using fixed time strings, e.g.
 
 (setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))
+                         (\"20:00\" . tango))
 
 or set calendar-longitude:
     (setq calendar-longitude 8.5)"))
 
-  ;; 3. Check if  `solar-sunrise-sunset' does not return a valid time for sunrise
-  (if (equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
-      (message "Could not get time for sunrise. Consider using fixed time strings, e.g.
-
-(setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))"))
-
-  ;; 4. Check if  `solar-sunrise-sunset' does not return a valid time for sunset
-  (if (equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
-      (message "Could not get time for sunset. Consider using fixed time strings, e.g.
-
-(setq circadian-themes '((\"9:00\" . wombat)
-                         (\"20:00\") . tango))"))
-
   (cond ((equal nil calendar-latitude)
-         nil)
+         (progn
+           nil))
         
         ((equal nil calendar-longitude)
-         nil)
-
-        ((equal nil (cl-first (cl-first (solar-sunrise-sunset (calendar-current-date)))))
-         nil)
-
-        ((equal nil (cl-first (cl-second (solar-sunrise-sunset (calendar-current-date)))))
-         nil)
+         (progn
+           nil))
         
         (t)))
 
@@ -209,7 +193,7 @@ or set calendar-longitude:
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunrise-numeric (cl-first (cl-first solar-result))))
       (if (equal nil sunrise-numeric)
-          (error "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (message "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
         (circadian--frac-to-time sunrise-numeric)))))
 
 (defun circadian-sunset ()
@@ -217,7 +201,7 @@ or set calendar-longitude:
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunset-numeric (cl-first (cl-second solar-result))))
       (if (equal nil sunset-numeric)
-          (error "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (message "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
         (circadian--frac-to-time sunset-numeric)))))
 
 (defun circadian--string-to-time (input)
@@ -229,13 +213,13 @@ or set calendar-longitude:
   (cond ((cl-equalp input :sunrise)
          (let  ((sunrise (circadian-sunrise)))
            (if (equal sunrise nil)
-               (error "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
+               (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
            sunrise))
 
         ((cl-equalp input :sunset)
          (let ((sunset (circadian-sunset)))
            (if (equal sunset nil)
-               (error "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
+               (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
            sunset))
 
         ((stringp input) (circadian--string-to-time input))))

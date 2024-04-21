@@ -232,7 +232,7 @@ or set calendar-longitude:
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
   (interactive)
-  (circadian-activate-latest-theme))
+  (circadian-activate-and-schedule))
 
 (provide 'circadian)
 ;;; circadian.el ends here

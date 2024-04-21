@@ -31,9 +31,48 @@ adaption software like:
 
 ---
 
-### Example usage
+### Usage
+Install circadian.el with
+[use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html)
+or [straight.el](https://github.com/radian-software/straight.el)
 
-##### Switching themes on time of day
+
+##### Configuration with times
+To auto-switch a theme on a specific time, use time strings:
+
+```elisp
+(use-package circadian
+  :ensure t
+  :config
+  (setq circadian-themes '(("8:00" . wombat)
+                           ("19:30" . adwaita)))
+  (circadian-setup))
+```
+
+##### Configuration with `:sunrise` and `:sunset`
+To auto-switch a theme based on your current locations sunrise and sunset times:
+
+1. Make sure to set your latitude and longitude (Get them e.g. at
+   [latlong.net](https://www.latlong.net/)):
+   
+   ```elisp
+  (setq calendar-latitude 40.712776)
+  (setq calendar-longitude -74.005974)
+  ```
+2. Configure `circadian-themes` using the `:sunset` and `:sunset`
+   ```elisp
+    (use-package circadian
+      :ensure t
+      :config
+      (setq circadian-themes '((:sunrise . adwaita)
+                               (:sunset  . wombat)))
+      (circadian-setup))
+  ```
+
+##### Use with custom themes
+To use custom themes, install them from MELPA using
+e.g. [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html)
+or [straight.el](https://github.com/radian-software/straight.el).
 
 Example usage featuring [hemera-themes](https://github.com/GuidoSchmidt/emacs-hemera-theme)
 and [nyx-theme](https://github.com/GuidoSchmidt/emacs-nyx-theme) (with use-package). Make sure
@@ -45,33 +84,6 @@ to use `:defer` keyword. Omitting it may lead to broken colors
 ;; make sure to use :defer keyword
 (use-package hemera-theme :ensure :defer)
 (use-package nyx-theme :ensure :defer)
-
-(use-package circadian
-  :ensure t
-  :config
-  (setq circadian-themes '(("8:00" . hemera)
-                           ("19:30" . nyx)))
-  (circadian-setup))
-```
-
-##### Switching themes on sunrise & sunset
-
-Be sure to set your latitude and longitude (Get them e.g. at [latlong.net](https://www.latlong.net/)):
-
-```elisp
-;; Install additinal themes from melpa
-;; make sure to use :defer keyword
-(use-package apropospriate-theme :ensure :defer)
-(use-package nord-theme :ensure :defer)
-
-(use-package circadian
-  :ensure t
-  :config
-  (setq calendar-latitude 49.0)
-  (setq calendar-longitude 8.5)
-  (setq circadian-themes '((:sunrise . apropospriate-light)
-                           (:sunset  . nord)))
-  (circadian-setup))
 ```
 
 ---
@@ -107,7 +119,7 @@ e.g. I like to override any themes cursor color to a very bright color via:
 
 ---
 
-### Development
+### Development & Testing
 
 Install Emacs [cask](https://github.com/cask/cask) environment. On macOS you
 canr use [homebrew](https://brew.sh/) with: `brew install cask`.

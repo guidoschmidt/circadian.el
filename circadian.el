@@ -138,7 +138,9 @@ set and  and sort the final list by time."
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
     (unless (equal (list theme) custom-enabled-themes)
-      (circadian-enable-theme theme))
+      (circadian-enable-theme theme)
+      (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M" next-time)))
+      (run-at-time next-time nil #'circadian-activate-current))
     next-time))
 
 
@@ -146,12 +148,8 @@ set and  and sort the final list by time."
   "Check which themes are overdue to be activated and load the last."
   (interactive)
   (cancel-function-timers #'circadian-activate-current)
-  (let* ((next-time (circadian-activate-current))
-         (time (decode-time (time-convert next-time 'list)))
-         (time-str (format "%02d:%02d:00" (nth 2 time) (nth 1 time))))
-    (message "[circadian.el] → Next run @ %02d:%02d:%02d"
-             (nth 2 time) (nth 1 time) (nth 0 time))
-    (run-at-time time-str nil #'circadian-activate-current)))
+  (let* ((next-time (circadian-activate-current)))
+    (run-at-time next-time nil #'circadian-activate-current)))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)

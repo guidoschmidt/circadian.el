@@ -16,7 +16,7 @@
   <h3 align="center">Theme-switching for Emacs based on daytime</h3>
 </p>
 
-### Conception
+## Conception
 
 Circadian tries to help reducing eye strain that may arise
 from difference of your display brightness and the
@@ -31,13 +31,12 @@ adaption software like:
 
 ---
 
-### Usage
+## Usage & Configuration
 Install circadian.el with
 [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html)
 or [straight.el](https://github.com/radian-software/straight.el)
 
-
-##### Configuration with times
+### Configuration with times
 To auto-switch a theme on a specific time, use time strings:
 
 ```elisp
@@ -49,27 +48,44 @@ To auto-switch a theme on a specific time, use time strings:
   (circadian-setup))
 ```
 
-##### Configuration with `:sunrise` and `:sunset`
+
+### Configuration with `:sunrise` and `:sunset`
 To auto-switch a theme based on your current locations sunrise and sunset times:
 
 1. Make sure to set your latitude and longitude (Get them e.g. at
    [latlong.net](https://www.latlong.net/)):
-   
-   ```elisp
-  (setq calendar-latitude 40.712776)
-  (setq calendar-longitude -74.005974)
-  ```
+    ```elisp
+      (setq calendar-latitude 40.712776)
+      (setq calendar-longitude -74.005974)
+    ```
 2. Configure `circadian-themes` using the `:sunset` and `:sunset`
-   ```elisp
+    ```elisp
     (use-package circadian
       :ensure t
       :config
       (setq circadian-themes '((:sunrise . adwaita)
                                (:sunset  . wombat)))
       (circadian-setup))
-  ```
+    ```
 
-##### Use with custom themes
+
+### Randomly selection from theme list
+Circadian.el can randomly select a theme from a given list, e.g here using [doom-themes](https://github.com/doomemacs/themes) at sunset:
+
+```elisp
+(use-package doom-themes)
+
+(use-package circadian
+  :config
+  (setq circadian-themes '((:sunrise . doom-gruvbox-light)
+                           (:sunset . '(doom-dracula doom-gruvbox)) ))
+  (add-hook 'emacs-startup-hook #'circadian-setup)
+  (circadian-setup))
+
+```
+
+
+### Use with custom themes
 To use custom themes, install them from MELPA using
 e.g. [use-package](https://www.gnu.org/software/emacs/manual/html_mono/use-package.html)
 or [straight.el](https://github.com/radian-software/straight.el).

@@ -68,11 +68,27 @@
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
-        (load-theme theme t)
-        (let ((time (circadian-now-time)))
-          (message "[circadian.el] → Enabled %s theme @ %02d:%02d:%02d"
-                   theme (nth 0 time) (nth 1 time) (nth 2 time)))
-        (run-hook-with-args 'circadian-after-load-theme-hook theme))
+        (if (not (equal (list theme) custom-enabled-themes))
+            (progn
+              (load-theme theme t)
+              (let ((time (circadian-now-time)))
+                (message "[circadian.el] → Enabled %s theme @ %s"
+                         theme
+                         (format-time-string "%H:%M:%S" time)))))
+        (let* ((themes (circadian-themes-parse))
+               (now (circadian-now-time))
+               (past-themes (circadian-filter-inactivate-themes themes now))
+               (entry (car (last (or past-themes themes))))
+               (next-entry (or (cadr (member entry themes))
+                               (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
+                                   (car themes)
+                                 (cl-first past-themes))))
+               (next-time (circadian--encode-time
+                           (cl-first (cl-first next-entry))
+                           (cl-second (cl-first next-entry)))))
+          (run-at-time next-time 1 #'circadian-enable-theme)
+          (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M:%S" next-time))))
+          (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
 
 (defun circadian--encode-time (hour min)
@@ -129,27 +145,14 @@ set and  and sort the final list by time."
          (theme-or-theme-list (cdr entry))
          (theme (if (listp theme-or-theme-list)
                     (nth (random (length (cl-second theme-or-theme-list))) (cl-second theme-or-theme-list))
-                  theme-or-theme-list))
-         (next-entry (or (cadr (member entry themes))
-                         (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
-                             (car themes)
-                           (cl-first past-themes))))
-         (next-time (circadian--encode-time
-                     (cl-first (cl-first next-entry))
-                     (cl-second (cl-first next-entry)))))
-    (unless (equal (list theme) custom-enabled-themes)
-      (circadian-enable-theme theme)
-      (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M" next-time)))
-      (run-at-time next-time nil #'circadian-activate-current))
-    next-time))
+                  theme-or-theme-list)))
+    (circadian-enable-theme theme)))
 
 
 (defun circadian-activate-and-schedule ()
   "Check which themes are overdue to be activated and load the last."
   (interactive)
-  (cancel-function-timers #'circadian-activate-current)
-  (let* ((next-time (circadian-activate-current)))
-    (run-at-time next-time nil #'circadian-activate-current)))
+  (circadian-activate-current))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)
@@ -229,7 +232,6 @@ or set calendar-longitude:
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (interactive)
   (circadian-activate-and-schedule))
 
 (provide 'circadian)

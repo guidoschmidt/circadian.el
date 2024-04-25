@@ -86,7 +86,7 @@
                (next-time (circadian--encode-time
                            (cl-first (cl-first next-entry))
                            (cl-second (cl-first next-entry)))))
-          (run-at-time next-time 1 #'circadian-enable-theme)
+          (run-at-time next-time 1 #'circadian-activate-and-schedule)
           (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M:%S" next-time))))
           (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))

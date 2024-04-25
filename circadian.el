@@ -44,6 +44,11 @@
 (require 'cl-lib)
 (require 'solar)
 
+(defcustom circadian-next-timer nil
+  "Timer to execute on next theme switch."
+  :type 'timer
+  :group 'circadian)
+
 (defcustom circadian-before-load-theme-hook nil
   "Functions to run before the theme is changed."
   :type 'hook
@@ -65,9 +70,16 @@
   ;; Only load the argument theme, when `custom-enabled-themes'
   ;; does not contain it.
   (mapc #'disable-theme custom-enabled-themes)
+  
+  (if (not (equal nil circadian-next-timer))
+      (progn
+        (cancel-timer circadian-next-timer)
+        (setq circadian-next-timer nil)))
+  
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
+
         (if (not (equal (list theme) custom-enabled-themes))
             (progn
               (load-theme theme t)
@@ -75,6 +87,7 @@
                 (message "[circadian.el] → Enabled %s theme @ %s"
                          theme
                          (format-time-string "%H:%M:%S" time)))))
+
         (let* ((themes (circadian-themes-parse))
                (now (circadian-now-time))
                (past-themes (circadian-filter-inactivate-themes themes now))
@@ -86,8 +99,11 @@
                (next-time (circadian--encode-time
                            (cl-first (cl-first next-entry))
                            (cl-second (cl-first next-entry)))))
-          (run-at-time next-time 1 #'circadian-activate-and-schedule)
-          (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M:%S" next-time))))
+          (if (equal nil circadian-next-timer)
+              (progn
+                (setq circadian-next-timer (run-at-time next-time nil #'circadian-activate-current))
+                (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M:%S" next-time))))))
+
           (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
 
@@ -146,7 +162,8 @@ set and  and sort the final list by time."
          (theme (if (listp theme-or-theme-list)
                     (nth (random (length (cl-second theme-or-theme-list))) (cl-second theme-or-theme-list))
                   theme-or-theme-list)))
-    (circadian-enable-theme theme)))
+    (circadian-enable-theme theme)
+    ))
 
 
 (defun circadian-activate-and-schedule ()

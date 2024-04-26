@@ -70,41 +70,20 @@
   ;; Only load the argument theme, when `custom-enabled-themes'
   ;; does not contain it.
   (mapc #'disable-theme custom-enabled-themes)
-  
-  (if (not (equal nil circadian-next-timer))
-      (progn
-        (cancel-timer circadian-next-timer)
-        (setq circadian-next-timer nil)))
-  
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
 
         (if (not (equal (list theme) custom-enabled-themes))
             (progn
+              (setq circadian-next-timer nil)
               (load-theme theme t)
-              (let ((time (circadian-now-time)))
-                (message "[circadian.el] → Enabled %s theme @ %s"
-                         theme
-                         (format-time-string "%H:%M:%S" time)))))
+              (message "[circadian.el] → Enabled %s theme @ %s"
+                       theme
+                       (format-time-string "%H:%M:%S %Z"))
+              (circadian-schedule)))
 
-        (let* ((themes (circadian-themes-parse))
-               (now (circadian-now-time))
-               (past-themes (circadian-filter-inactivate-themes themes now))
-               (entry (car (last (or past-themes themes))))
-               (next-entry (or (cadr (member entry themes))
-                               (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
-                                   (car themes)
-                                 (cl-first past-themes))))
-               (next-time (circadian--encode-time
-                           (cl-first (cl-first next-entry))
-                           (cl-second (cl-first next-entry)))))
-          (if (equal nil circadian-next-timer)
-              (progn
-                (setq circadian-next-timer (run-at-time next-time nil #'circadian-activate-current))
-                (message (concat "[circadian.el] → Next run @ " (format-time-string "%H:%M:%S" next-time))))))
-
-          (run-hook-with-args 'circadian-after-load-theme-hook theme))
+        (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
 
 (defun circadian--encode-time (hour min)
@@ -160,16 +139,33 @@ set and  and sort the final list by time."
          (entry (car (last (or past-themes themes))))
          (theme-or-theme-list (cdr entry))
          (theme (if (listp theme-or-theme-list)
-                    (nth (random (length (cl-second theme-or-theme-list))) (cl-second theme-or-theme-list))
+                    (progn
+                      (nth (random (length theme-or-theme-list)) theme-or-theme-list))
                   theme-or-theme-list)))
-    (circadian-enable-theme theme)
-    ))
+    (circadian-enable-theme theme)))
 
-
-(defun circadian-activate-and-schedule ()
-  "Check which themes are overdue to be activated and load the last."
-  (interactive)
-  (circadian-activate-current))
+(defun circadian-schedule()
+  "Schedule the next timer for circadian."
+  (let* ((themes (circadian-themes-parse))
+         (now (circadian-now-time))
+         (past-themes (circadian-filter-inactivate-themes themes now))
+         (entry (car (last (or past-themes themes))))
+         (next-entry (or (cadr (member entry themes))
+                         (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
+                             (car themes)
+                           (cl-first past-themes))))
+         (next-theme (cdr next-entry))
+         (next-time (circadian--encode-time
+                     (cl-first (cl-first next-entry))
+                     (cl-second (cl-first next-entry)))))
+    (if (equal nil circadian-next-timer)
+        (progn
+          (setq circadian-next-timer (run-at-time next-time nil #'circadian-activate-current))
+          (message "[circadian.el] → Next theme %s @ %s"
+                   (if (listp next-theme)
+                       (concat "one of " (format "%s" next-theme))
+                     next-theme)
+                   (format-time-string "%H:%M:%S %Z" next-time))))))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)
@@ -249,7 +245,9 @@ or set calendar-longitude:
 ;;;###autoload
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
-  (circadian-activate-and-schedule))
+  (interactive)
+  (circadian-activate-current)
+  (circadian-schedule))
 
 (provide 'circadian)
 ;;; circadian.el ends here

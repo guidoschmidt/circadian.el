@@ -23,7 +23,7 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(5 0 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    
    (should (equal (list 'adwaita) custom-enabled-themes)))
 
@@ -34,7 +34,7 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(5 2 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'wombat) custom-enabled-themes)))
 
   ;; After 14:47, before 23:59
@@ -44,7 +44,7 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(14 47 1))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'tango) custom-enabled-themes)))
 
   ;; After 23:59
@@ -54,7 +54,7 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(23 59 15))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'adwaita) custom-enabled-themes)))
 
   ;; Surpassing midnight
@@ -64,23 +64,22 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(0 2 10))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'adwaita) custom-enabled-themes))))
 
 
 
-(ert-deftest test-circadian-activate-and-schedule ()
-  "Test `circadian-activate-and-schedule' used in `circadian-setup'."
-  ;; (print "→ TEST: circadian-activate-and-schedule")
+(ert-deftest test-circadian-setup ()
+  "Test `circadian-setup'."
   (setq circadian-themes '(("7:00" . wombat)
                            ("16:00" . tango)))
   (with-mock
    (stub circadian-now-time => '(7 21 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'wombat) custom-enabled-themes)))
   (with-mock
    (stub circadian-now-time => '(17 0 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal (list 'tango) custom-enabled-themes))))
 
 
@@ -94,11 +93,11 @@
    (setq circadian-themes '((:sunrise . adwaita)
                             (:sunset  . wombat)))
    (stub circadian-now-time => '(14 21 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal 'adwaita (cl-first custom-enabled-themes)))
 
    (stub circadian-now-time => '(22 30 0))
-   (circadian-activate-and-schedule)
+   (circadian-setup)
    (should (equal 'wombat (cl-first custom-enabled-themes)))))
 
 
@@ -153,7 +152,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
 
 (defvar test-order '(member
                      test-circadian-filter-and-activate-themes
-                     test-circadian-activate-and-schedule
+                     test-circadian-setup
                      test-circadian-sunrise-sunset
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark

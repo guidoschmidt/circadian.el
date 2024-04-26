@@ -78,7 +78,7 @@ Circadian.el can randomly select a theme from a given list, e.g here using [doom
 (use-package circadian
   :config
   (setq circadian-themes '((:sunrise . doom-gruvbox-light)
-                           (:sunset . '(doom-dracula doom-gruvbox)) ))
+                           (:sunset . (doom-dracula doom-gruvbox))))
   (add-hook 'emacs-startup-hook #'circadian-setup)
   (circadian-setup))
 

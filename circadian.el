@@ -144,7 +144,7 @@ set and  and sort the final list by time."
          (entry (car (last (or past-themes themes))))
          (theme-or-theme-list (cdr entry))
          (theme (if (listp theme-or-theme-list)
-                    (nth (random (length (cl-second theme-or-theme-list))) (cl-second theme-or-theme-list))
+                    (nth (random (length theme-or-theme-list)) theme-or-theme-list)
                   theme-or-theme-list)))
     (circadian-enable-theme theme)))
 

@@ -7,7 +7,7 @@
 ;; URL: https://github.com/GuidoSchmidt/circadian
 ;; Version: 0.3.3
 ;; Keywords: themes
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "27.2"))
 
 ;; This file is part of GNU Emacs.
 
@@ -79,20 +79,20 @@
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
 
-        (if (not (member theme custom-enabled-themes))
+        (if (equal nil (member theme custom-enabled-themes))
             (progn
               (mapc #'disable-theme custom-enabled-themes)
               (load-theme theme t)
-              (setq circadian-next-timer nil)
               (if circadian-verbose
                   (message "[circadian.el] → Enabled %s theme @ %s"
                            theme
-                           (format-time-string "%H:%M:%S %Z")))
-              (circadian-schedule))
+                           (format-time-string "%H:%M:%S %Z"))))
           (progn
             (if circadian-verbose
                 (message "[circadian.el] → %s already enabled"
                          theme))))
+
+        (circadian-schedule)
 
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
@@ -100,9 +100,18 @@
 (defun circadian-encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
   (let* ((now (decode-time))
-         (day (nth 3 now))
-         (month (nth 4 now))
-         (year (nth 5 now))
+         (is-earlier (circadian-a-earlier-b-p (list hour min) (list (nth 2 now) (nth 1 now))))
+         (tomorrow (decode-time (+ (* 24 60 60)
+                                   (time-to-seconds (current-time)))))
+         (day (if is-earlier
+                  (nth 3 tomorrow)
+                (nth 3 now)))
+         (month (if is-earlier
+                    (nth 4 now)
+                  (nth 4 tomorrow)))
+         (year (if is-earlier
+                   (nth 5 now)
+                 (nth 5 tomorrow)))
          (zone (current-time-zone)))
     (encode-time 0 min hour day month year zone)))
 
@@ -144,7 +153,6 @@ set and  and sort the final list by time."
 
 (defun circadian-activate-current ()
   "Check which theme should be active currently and return a time for the next run."
-  (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -158,6 +166,7 @@ set and  and sort the final list by time."
 
 (defun circadian-schedule()
   "Schedule the next timer for circadian."
+  (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -166,19 +175,27 @@ set and  and sort the final list by time."
                          (if (circadian-a-earlier-b-p (circadian-now-time) (cl-first entry))
                              (car themes)
                            (cl-first past-themes))))
-         (next-theme (cdr next-entry))
+         (next-theme-or-theme-list (cdr next-entry))
+         (next-theme (if (listp next-theme-or-theme-list)
+                         (progn
+                           (nth (random (length next-theme-or-theme-list)) next-theme-or-theme-list))
+                       next-theme-or-theme-list))
          (next-time (circadian-encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
     (if (equal nil circadian-next-timer)
         (progn
-          (setq circadian-next-timer (run-at-time next-time nil #'circadian-activate-current))
+          (setq circadian-next-timer
+                (run-at-time
+                 next-time
+                 nil
+                 #'circadian-enable-theme next-theme))
           (if circadian-verbose
-           (message "[circadian.el] → Next theme %s @ %s"
-                    (if (listp next-theme)
-                        (concat "one of " (format "%s" next-theme))
-                      next-theme)
-                    (format-time-string "%H:%M:%S %Z" next-time)))))))
+              (message "[circadian.el] → Next theme %s @ %s"
+                       (if (listp next-theme)
+                           (concat "one of " (format "%s" next-theme))
+                         next-theme)
+                       (format-time-string "%H:%M:%S %Z" next-time)))))))
 
 ;; --- Sunset-sunrise
 (defun circadian-frac-to-time (f)
@@ -270,7 +287,9 @@ or set calendar-longitude:
   "Stop `circadian-next-timer' - To re-schedule, call `circadian-setup' again."
   (interactive)
   (if (not (equal nil circadian-next-timer))
-      (cancel-timer circadian-next-timer)))
+      (progn
+        (cancel-timer circadian-next-timer)
+        (setq circadian-next-timer nil))))
 
 (provide 'circadian)
 ;;; circadian.el ends here

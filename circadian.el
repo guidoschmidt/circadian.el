@@ -74,20 +74,25 @@
   "Clear previous `custom-enabled-themes' and load THEME."
   ;; Only load the argument theme, when `custom-enabled-themes'
   ;; does not contain it.
-  (mapc #'disable-theme custom-enabled-themes)
+  
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
 
-        (if (not (equal (list theme) custom-enabled-themes))
+        (if (not (member theme custom-enabled-themes))
             (progn
-              (setq circadian-next-timer nil)
+              (mapc #'disable-theme custom-enabled-themes)
               (load-theme theme t)
+              (setq circadian-next-timer nil)
               (if circadian-verbose
                   (message "[circadian.el] → Enabled %s theme @ %s"
                            theme
                            (format-time-string "%H:%M:%S %Z")))
-              (circadian-schedule)))
+              (circadian-schedule))
+          (progn
+            (if circadian-verbose
+                (message "[circadian.el] → %s already enabled"
+                         theme))))
 
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
@@ -139,6 +144,7 @@ set and  and sort the final list by time."
 
 (defun circadian-activate-current ()
   "Check which theme should be active currently and return a time for the next run."
+  (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))

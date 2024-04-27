@@ -44,6 +44,11 @@
 (require 'cl-lib)
 (require 'solar)
 
+(defcustom circadian-verbose nil
+  "Timer to execute on next theme switch."
+  :type 'boolean
+  :group 'circadian)
+
 (defcustom circadian-next-timer nil
   "Timer to execute on next theme switch."
   :type 'timer
@@ -78,9 +83,10 @@
             (progn
               (setq circadian-next-timer nil)
               (load-theme theme t)
-              (message "[circadian.el] → Enabled %s theme @ %s"
-                       theme
-                       (format-time-string "%H:%M:%S %Z"))
+              (if circadian-verbose
+                  (message "[circadian.el] → Enabled %s theme @ %s"
+                           theme
+                           (format-time-string "%H:%M:%S %Z")))
               (circadian-schedule)))
 
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
@@ -161,11 +167,12 @@ set and  and sort the final list by time."
     (if (equal nil circadian-next-timer)
         (progn
           (setq circadian-next-timer (run-at-time next-time nil #'circadian-activate-current))
-          (message "[circadian.el] → Next theme %s @ %s"
-                   (if (listp next-theme)
-                       (concat "one of " (format "%s" next-theme))
-                     next-theme)
-                   (format-time-string "%H:%M:%S %Z" next-time))))))
+          (if circadian-verbose
+           (message "[circadian.el] → Next theme %s @ %s"
+                    (if (listp next-theme)
+                        (concat "one of " (format "%s" next-theme))
+                      next-theme)
+                    (format-time-string "%H:%M:%S %Z" next-time)))))))
 
 ;; --- Sunset-sunrise
 (defun circadian--frac-to-time (f)
@@ -177,7 +184,7 @@ set and  and sort the final list by time."
 (defun circadian-check-calendar ()
   "Check if either calendar-latitude or calendar-longitude is not set."
   ;; 1. Check `calendar-latitude' ond message user if it's not set.
-  (if (equal nil calendar-latitude)
+  (if (and circadian-verbose (equal nil calendar-latitude))
       (message "calendar-latitude not set. Consider using fixed time strings, e.g.
 
 (setq circadian-themes '((\"9:00\" . wombat)
@@ -187,7 +194,7 @@ or set calendar-latitude:
     (setq calendar-latitude 49.0)"))
 
   ;; 2. Check `calendar-longitude' ond message user if it's not set.
-  (if (equal nil calendar-longitude)
+  (if (and circadian-verbose (equal nil calendar-longitude))
       (message "calendar-longitude not set. Consider using fixed time strings, e.g.
 
 (setq circadian-themes '((\"9:00\" . wombat)
@@ -211,7 +218,8 @@ or set calendar-longitude:
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunrise-numeric (cl-first (cl-first solar-result))))
       (if (equal nil sunrise-numeric)
-          (message "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (if circadian-verbose
+              (message "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))"))
         (circadian--frac-to-time sunrise-numeric)))))
 
 (defun circadian-sunset ()
@@ -219,7 +227,8 @@ or set calendar-longitude:
   (let ((solar-result (solar-sunrise-sunset (calendar-current-date))))
     (let ((sunset-numeric (cl-first (cl-second solar-result))))
       (if (equal nil sunset-numeric)
-          (message "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))")
+          (if circadian-verbose
+              (message "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))"))
         (circadian--frac-to-time sunset-numeric)))))
 
 (defun circadian--string-to-time (input)
@@ -231,13 +240,15 @@ or set calendar-longitude:
   (cond ((cl-equalp input :sunrise)
          (let  ((sunrise (circadian-sunrise)))
            (if (equal sunrise nil)
-               (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
+               (if circadian-verbose
+                (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings")))
            sunrise))
 
         ((cl-equalp input :sunset)
          (let ((sunset (circadian-sunset)))
            (if (equal sunset nil)
-               (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings"))
+               (if circadian-verbose
+                   (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings")))
            sunset))
 
         ((stringp input) (circadian--string-to-time input))))
@@ -248,6 +259,12 @@ or set calendar-longitude:
   (interactive)
   (circadian-activate-current)
   (circadian-schedule))
+
+(defun circadian-stop ()
+  "Stop `circadian-next-timer' - To re-schedule, call `circadian-setup' again."
+  (interactive)
+  (if (not (equal nil circadian-next-timer))
+      (cancel-timer circadian-next-timer)))
 
 (provide 'circadian)
 ;;; circadian.el ends here

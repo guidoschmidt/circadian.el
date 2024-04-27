@@ -92,7 +92,7 @@
         (run-hook-with-args 'circadian-after-load-theme-hook theme))
     (error "[circadian.el/ERROR] → Problem loading theme %s" theme)))
 
-(defun circadian--encode-time (hour min)
+(defun circadian-encode-time (hour min)
   "Encode HOUR hours and MIN minutes into a valid format for `run-at-time'."
   (let* ((now (decode-time))
          (day (nth 3 now))
@@ -161,7 +161,7 @@ set and  and sort the final list by time."
                              (car themes)
                            (cl-first past-themes))))
          (next-theme (cdr next-entry))
-         (next-time (circadian--encode-time
+         (next-time (circadian-encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
     (if (equal nil circadian-next-timer)
@@ -175,7 +175,7 @@ set and  and sort the final list by time."
                     (format-time-string "%H:%M:%S %Z" next-time)))))))
 
 ;; --- Sunset-sunrise
-(defun circadian--frac-to-time (f)
+(defun circadian-frac-to-time (f)
   "Convert fractional time F to (HH MM)."
   (let ((l (cl-floor f)))
        (list (cl-first l)
@@ -220,7 +220,7 @@ or set calendar-longitude:
       (if (equal nil sunrise-numeric)
           (if circadian-verbose
               (message "[circadian.el/ERROR] No valid sunrise from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))"))
-        (circadian--frac-to-time sunrise-numeric)))))
+        (circadian-frac-to-time sunrise-numeric)))))
 
 (defun circadian-sunset ()
   "Get clean sunset time string from Emacs' `sunset-sunrise'`."
@@ -229,9 +229,9 @@ or set calendar-longitude:
       (if (equal nil sunset-numeric)
           (if circadian-verbose
               (message "[circadian.el/ERROR] No valid sunset from solar-sunrise-sunset, consider using fixed time strings, e.g. (setq circadian-themes '((\"9:00\" . wombat) (\"20:00\" . tango)))"))
-        (circadian--frac-to-time sunset-numeric)))))
+        (circadian-frac-to-time sunset-numeric)))))
 
-(defun circadian--string-to-time (input)
+(defun circadian-string-to-time (input)
   "Parse INPUT string to `(HH MM)'."
   (cl-map 'list #'string-to-number (split-string input ":")))
 
@@ -251,7 +251,7 @@ or set calendar-longitude:
                    (message "[circadian.el/ERROR] Could not get valid sunset time — check your time zone settings")))
            sunset))
 
-        ((stringp input) (circadian--string-to-time input))))
+        ((stringp input) (circadian-string-to-time input))))
 
 ;;;###autoload
 (defun circadian-setup ()

@@ -122,7 +122,35 @@ B should be earlier than A
   ;; (print "→ TEST: time comparisons")
   (should (equal t (circadian-a-earlier-b-p '(7 50) '(7 51))))
   (should (equal nil (circadian-a-earlier-b-p '(19 20) '(19 19))))
-  (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20)))))
+  (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20))))
+
+  (let* ((next-time (decode-time (circadian-encode-time 13 10)))
+         (next-day (nth 3 next-time))
+         (next-min (nth 1 next-time))
+         (next-hour (nth 2 next-time)))
+    (with-mock
+     (stub decode-time => '(43 24 14 28 4 2024 0 t 7200))
+     (let* ((now (decode-time))
+            (day (nth 3 now))
+            (min (nth 3 now))
+            (hour (nth 3 now)))
+       (should (< next-min min))
+       (should (< next-hour hour))
+       (should (equal (+ 1 day) next-day)))))
+
+  (let* ((next-time (decode-time (circadian-encode-time 0 0)))
+         (next-day (nth 3 next-time))
+         (next-min (nth 1 next-time))
+         (next-hour (nth 2 next-time)))
+    (with-mock
+     (stub decode-time => '(43 24 14 28 4 2024 0 t 7200))
+     (let* ((now (decode-time))
+            (day (nth 3 now))
+            (min (nth 3 now))
+            (hour (nth 3 now)))
+       (should (< next-min min))
+       (should (< next-hour hour))
+       (should (equal (+ 1 day) next-day))))))
 
 
 

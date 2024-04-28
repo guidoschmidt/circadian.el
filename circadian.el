@@ -166,6 +166,8 @@ set and  and sort the final list by time."
 
 (defun circadian-schedule()
   "Schedule the next timer for circadian."
+  (if (not (equal nil circadian-next-timer))
+      (cancel-timer circadian-next-timer))
   (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
@@ -183,19 +185,17 @@ set and  and sort the final list by time."
          (next-time (circadian-encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
-    (if (equal nil circadian-next-timer)
-        (progn
-          (setq circadian-next-timer
-                (run-at-time
-                 next-time
-                 nil
-                 #'circadian-enable-theme next-theme))
-          (if circadian-verbose
-              (message "[circadian.el] → Next theme %s @ %s"
-                       (if (listp next-theme)
-                           (concat "one of " (format "%s" next-theme))
-                         next-theme)
-                       (format-time-string "%H:%M:%S %Z" next-time)))))))
+    (setq circadian-next-timer
+          (run-at-time
+           next-time
+           nil
+           #'circadian-enable-theme next-theme))
+    (if circadian-verbose
+        (message "[circadian.el] → Next theme %s @ %s"
+                 (if (listp next-theme)
+                     (concat "one of " (format "%s" next-theme))
+                   next-theme)
+                 (format-time-string "%H:%M:%S %Z" next-time)))))
 
 ;; --- Sunset-sunrise
 (defun circadian-frac-to-time (f)

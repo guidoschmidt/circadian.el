@@ -81,8 +81,7 @@ Circadian.el can randomly select a theme from a given list, e.g here using [doom
                            (:sunset . (doom-dracula doom-gruvbox))))
   (add-hook 'emacs-startup-hook #'circadian-setup)
   (circadian-setup))
-
-```
+``` 
 
 
 ### Use with custom themes
@@ -100,6 +99,16 @@ to use `:defer` keyword. Omitting it may lead to broken colors
 ;; make sure to use :defer keyword
 (use-package hemera-theme :ensure :defer)
 (use-package nyx-theme :ensure :defer)
+```
+
+
+### Verbose messages
+By default circadian will not log any messages. however for development or just
+getting more information, one can enable a more verbose message log:
+
+```elisp
+(setq circadian-verbose t)
+
 ```
 
 ---

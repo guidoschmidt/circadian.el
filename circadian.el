@@ -83,6 +83,7 @@
             (progn
               (mapc #'disable-theme custom-enabled-themes)
               (load-theme theme t)
+              (setq circadian-next-timer nil)
               (if circadian-verbose
                   (message "[circadian.el] → Enabled %s theme @ %s"
                            theme
@@ -184,17 +185,18 @@ set and  and sort the final list by time."
          (next-time (circadian-encode-time
                      (cl-first (cl-first next-entry))
                      (cl-second (cl-first next-entry)))))
-    (setq circadian-next-timer
-          (run-at-time
-           next-time
-           nil
-           #'circadian-enable-theme next-theme))
-    (if circadian-verbose
-        (message "[circadian.el] → Next theme %s @ %s"
-                 (if (listp next-theme)
-                     (concat "one of " (format "%s" next-theme))
-                   next-theme)
-                 (format-time-string "%H:%M:%S %Z" next-time)))))
+    (if (equal nil circadian-next-timer)
+        (progn (setq circadian-next-timer
+                     (run-at-time
+                      next-time
+                      nil
+                      #'circadian-enable-theme next-theme))
+               (if circadian-verbose
+                   (message "[circadian.el] → Next theme %s @ %s"
+                            (if (listp next-theme)
+                                (concat "one of " (format "%s" next-theme))
+                              next-theme)
+                            (format-time-string "%H:%M:%S %Z" next-time)))))))
 
 ;; --- Sunset-sunrise
 (defun circadian-frac-to-time (f)

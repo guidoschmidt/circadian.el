@@ -83,6 +83,8 @@
             (progn
               (mapc #'disable-theme custom-enabled-themes)
               (load-theme theme t)
+              (if (not (equal nil circadian-next-timer))
+                  (cancel-timer circadian-next-timer))
               (setq circadian-next-timer nil)
               (if circadian-verbose
                   (message "[circadian.el] → Enabled %s theme @ %s"
@@ -166,8 +168,6 @@ set and  and sort the final list by time."
 
 (defun circadian-schedule()
   "Schedule the next timer for circadian."
-  (if (not (equal nil circadian-next-timer))
-      (cancel-timer circadian-next-timer))
   (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))

@@ -111,9 +111,8 @@
                   (nth 4 tomorrow)))
          (year (if is-earlier
                    (nth 5 now)
-                 (nth 5 tomorrow)))
-         (zone (current-time-zone)))
-    (encode-time 0 min hour day month year zone)))
+                 (nth 5 tomorrow))))
+    (encode-time 0 min hour day month year nil -1 nil)))
 
 (defun circadian-themes-parse ()
   "Parse `circadian-themes', filter the list and sort it by time.
@@ -162,6 +161,7 @@ set and  and sort the final list by time."
                     (progn
                       (nth (random (length theme-or-theme-list)) theme-or-theme-list))
                   theme-or-theme-list)))
+    (print theme-or-theme-list)
     (circadian-enable-theme theme)))
 
 (defun circadian-schedule()

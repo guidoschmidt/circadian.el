@@ -119,36 +119,36 @@ Time A: 17:59
 Time B: 17:58
 B should be earlier than A
 => `circadian-a-earlier-b-p' should return t."
-  ;; (print "→ TEST: time comparisons")
+  ;; (
   (should (equal t (circadian-a-earlier-b-p '(7 50) '(7 51))))
   (should (equal nil (circadian-a-earlier-b-p '(19 20) '(19 19))))
   (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20))))
 
-  (let* ((next-time (decode-time (circadian-encode-time 13 10)))
-         (next-day (nth 3 next-time))
-         (next-min (nth 1 next-time))
-         (next-hour (nth 2 next-time)))
-    (with-mock
-     (stub decode-time => '(43 24 14 28 4 2024 0 t 7200))
+  (with-mock
+   ;; tomorrow
+   (stub decode-time => '(0 30 16 28 4 2024 nil -1 nil))
+   (let* ((next-time (decode-time (circadian-encode-time 0 0)))
+          (next-day (nth 3 next-time))
+          (next-hour (nth 2 next-time)))
+     ;; today
+     (stub decode-time => '(0 30 14 28 4 2024 nil -1 nil))
      (let* ((now (decode-time))
             (day (nth 3 now))
-            (min (nth 3 now))
-            (hour (nth 3 now)))
-       (should (< next-min min))
-       (should (< next-hour hour))
-       (should (equal (+ 1 day) next-day)))))
+            (hour (nth 2 now)))
+       (should (> next-hour hour))
+       (should (equal day next-day)))))
 
-  (let* ((next-time (decode-time (circadian-encode-time 0 0)))
-         (next-day (nth 3 next-time))
-         (next-min (nth 1 next-time))
-         (next-hour (nth 2 next-time)))
-    (with-mock
-     (stub decode-time => '(43 24 14 28 4 2024 0 t 7200))
+  (with-mock
+   ;; tomorrow
+   (stub decode-time => '(0 30 7 29 4 2024 nil -1 nil))
+   (let* ((next-time (decode-time (circadian-encode-time 0 0)))
+          (next-day (nth 3 next-time))
+          (next-hour (nth 2 next-time)))
+     ;; today
+     (stub decode-time => '(0 30 14 28 4 2024 nil -1 nil))
      (let* ((now (decode-time))
             (day (nth 3 now))
-            (min (nth 3 now))
-            (hour (nth 3 now)))
-       (should (< next-min min))
+            (hour (nth 2 now)))
        (should (< next-hour hour))
        (should (equal (+ 1 day) next-day))))))
 

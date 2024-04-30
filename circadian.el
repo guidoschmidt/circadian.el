@@ -161,7 +161,6 @@ set and  and sort the final list by time."
                     (progn
                       (nth (random (length theme-or-theme-list)) theme-or-theme-list))
                   theme-or-theme-list)))
-    (print theme-or-theme-list)
     (circadian-enable-theme theme)))
 
 (defun circadian-schedule()

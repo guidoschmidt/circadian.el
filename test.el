@@ -15,6 +15,7 @@
                            ("23:59" . adwaita)))
   (setq circadian-themes-parsed (circadian-themes-parse))
 
+
   ;; Before 5:01
   (let ((time-now '(4 10)))
     (should (equal 0 (length (circadian-filter-inactivate-themes
@@ -22,8 +23,9 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(5 0 0))
-   (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes))))
+   (circadian-setup)
+   
+   (should (equal (list 'adwaita) custom-enabled-themes)))
 
   ;; After 5:01, before 14:47
   (let ((time-now '(5 2)))
@@ -32,8 +34,8 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(5 2 0))
-   (circadian-activate-latest-theme)
-   (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (circadian-setup)
+   (should (equal (list 'wombat) custom-enabled-themes)))
 
   ;; After 14:47, before 23:59
   (let ((time-now '(14 47)))
@@ -42,8 +44,8 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(14 47 1))
-   (circadian-activate-latest-theme)
-   (should (equal 'tango (cl-first custom-enabled-themes))))
+   (circadian-setup)
+   (should (equal (list 'tango) custom-enabled-themes)))
 
   ;; After 23:59
   (let ((time-now '(23 59)))
@@ -52,8 +54,8 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(23 59 15))
-   (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes))))
+   (circadian-setup)
+   (should (equal (list 'adwaita) custom-enabled-themes)))
 
   ;; Surpassing midnight
   (let ((time-now '(0 2)))
@@ -62,45 +64,41 @@
                               time-now)))))
   (with-mock
    (stub circadian-now-time => '(0 2 10))
-   (circadian-activate-latest-theme)
-   (should (equal 'adwaita (cl-first custom-enabled-themes)))))
+   (circadian-setup)
+   (should (equal (list 'adwaita) custom-enabled-themes))))
 
 
 
-(ert-deftest test-circadian-activate-latest-theme ()
-  "Test `circadian-activate-latest-theme' used in `circadian-setup'."
-  ;; (print "→ TEST: circadian-activate-latest-theme")
+(ert-deftest test-circadian-setup ()
+  "Test `circadian-setup'."
   (setq circadian-themes '(("7:00" . wombat)
                            ("16:00" . tango)))
   (with-mock
    (stub circadian-now-time => '(7 21 0))
-   (circadian-activate-latest-theme)
-   (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (circadian-setup)
+   (should (equal (list 'wombat) custom-enabled-themes)))
   (with-mock
    (stub circadian-now-time => '(17 0 0))
-   (circadian-activate-latest-theme)
-   (should (equal 'tango (cl-first custom-enabled-themes)))))
+   (circadian-setup)
+   (should (equal (list 'tango) custom-enabled-themes))))
 
 
 
 (ert-deftest test-circadian-sunrise-sunset ()
   "Test :sunrise and :sunset keywords for theme switching.
 @TODO currently failing, needs a fix"
-  (setq calendar-latitude 49.329896)
-  (setq calendar-longitude 8.570925)
-  (setq circadian-themes '((:sunrise . wombat)
-                           (:sunset  . adwaita)))
-  (circadian-setup)
-
   (with-mock
-    (stub circadian-now-time => '(14 21 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'wombat (cl-first custom-enabled-themes))))
+   (setq calendar-latitude 49.329896)
+   (setq calendar-longitude 8.570925)
+   (setq circadian-themes '((:sunrise . adwaita)
+                            (:sunset  . wombat)))
+   (stub circadian-now-time => '(14 21 0))
+   (circadian-setup)
+   (should (equal 'adwaita (cl-first custom-enabled-themes)))
 
-  (with-mock
-    (stub circadian-now-time-string => '(16 50 0))
-    (circadian-activate-latest-theme)
-    (should (equal 'adwaita (cl-first custom-enabled-themes)))))
+   (stub circadian-now-time => '(22 30 0))
+   (circadian-setup)
+   (should (equal 'wombat (cl-first custom-enabled-themes)))))
 
 
 
@@ -121,10 +119,38 @@ Time A: 17:59
 Time B: 17:58
 B should be earlier than A
 => `circadian-a-earlier-b-p' should return t."
-  ;; (print "→ TEST: time comparisons")
+  ;; (
   (should (equal t (circadian-a-earlier-b-p '(7 50) '(7 51))))
   (should (equal nil (circadian-a-earlier-b-p '(19 20) '(19 19))))
-  (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20)))))
+  (should (equal t (circadian-a-earlier-b-p '(20 20) '(20 20))))
+
+  (with-mock
+   ;; tomorrow
+   (stub decode-time => '(0 30 16 28 4 2024 nil -1 nil))
+   (let* ((next-time (decode-time (circadian-encode-time 0 0)))
+          (next-day (nth 3 next-time))
+          (next-hour (nth 2 next-time)))
+     ;; today
+     (stub decode-time => '(0 30 14 28 4 2024 nil -1 nil))
+     (let* ((now (decode-time))
+            (day (nth 3 now))
+            (hour (nth 2 now)))
+       (should (> next-hour hour))
+       (should (equal day next-day)))))
+
+  (with-mock
+   ;; tomorrow
+   (stub decode-time => '(0 30 7 29 4 2024 nil -1 nil))
+   (let* ((next-time (decode-time (circadian-encode-time 0 0)))
+          (next-day (nth 3 next-time))
+          (next-hour (nth 2 next-time)))
+     ;; today
+     (stub decode-time => '(0 30 14 28 4 2024 nil -1 nil))
+     (let* ((now (decode-time))
+            (day (nth 3 now))
+            (hour (nth 2 now)))
+       (should (< next-hour hour))
+       (should (equal (+ 1 day) next-day))))))
 
 
 
@@ -146,7 +172,7 @@ B should be earlier than A
 https://github.com/guidoschmidt/circadian.el/issues/27"
   (setq calendar-latitude 79.482623)
   (setq calendar-longitude 5.318703)
-  (setq circadian-themes '((:sunrise . wombat)
+  (setq circadian-themes '((:sunrise . adwaita)
                            (:sunset  . tango)))
   (circadian-setup))
 
@@ -154,12 +180,12 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
 
 (defvar test-order '(member
                      test-circadian-filter-and-activate-themes
-                     test-circadian-activate-latest-theme
+                     test-circadian-setup
                      test-circadian-sunrise-sunset
-                     test-circadian-sunrise-sunset-timezones
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark
-                     test-circadian-invalid-solar-sunrise-sunset))
+                     test-circadian-invalid-solar-sunrise-sunset
+                     test-circadian-sunrise-sunset-timezones))
 
 (provide 'circadian.el-test)
 ;;; circadian.el-test.el ends here

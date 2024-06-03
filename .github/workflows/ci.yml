@@ -6,24 +6,24 @@ jobs:
     strategy:
       matrix:
         emacs-version:
-          - 26.3
           - 27.2
           - 28.2
+          - 29.3
           - snapshot
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: purcell/setup-emacs@master
         with:
           version: ${{ matrix.emacs-version }}
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: cache-cask-packages
         with:
           path: .cask
           key: cache-cask-packages-000
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: cache-cask-executable
         with:
           path: ~/.cask

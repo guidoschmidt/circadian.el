@@ -161,14 +161,18 @@ set and  and sort the final list by time."
          (entry (car (last (or past-themes themes))))
          (theme-or-theme-list (cdr entry))
          (theme (if (listp theme-or-theme-list)
-                    (progn
-                      (nth (random (length theme-or-theme-list)) theme-or-theme-list))
+                    ;; Remove already enabled themes to randomly select the next theme
+                    ;; and avoid re-enabling an already active theme.
+                    (let* ((possible-theme-list (cl-remove-if (lambda (entry)
+                                                                (custom-theme-enabled-p entry))
+                                                              theme-or-theme-list)))
+                     (progn
+                       (nth (random (length theme-or-theme-list)) possible-theme-list)))
                   theme-or-theme-list)))
     (circadian-enable-theme theme)))
 
 (defun circadian-schedule()
   "Schedule the next timer for circadian."
-  (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))

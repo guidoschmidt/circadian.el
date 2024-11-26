@@ -166,8 +166,7 @@ set and  and sort the final list by time."
                     (let* ((possible-theme-list (cl-remove-if (lambda (entry)
                                                                 (custom-theme-enabled-p entry))
                                                               theme-or-theme-list)))
-                     (progn
-                       (nth (random (length possible-theme-list)) possible-theme-list)))
+                      (nth (random (length possible-theme-list)) possible-theme-list))
                   theme-or-theme-list)))
     (circadian-enable-theme theme)))
 

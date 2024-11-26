@@ -167,7 +167,7 @@ set and  and sort the final list by time."
                                                                 (custom-theme-enabled-p entry))
                                                               theme-or-theme-list)))
                      (progn
-                       (nth (random (length theme-or-theme-list)) possible-theme-list)))
+                       (nth (random (length possible-theme-list)) possible-theme-list)))
                   theme-or-theme-list)))
     (circadian-enable-theme theme)))
 

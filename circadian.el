@@ -74,7 +74,7 @@
   "Clear previous `custom-enabled-themes' and load THEME."
   ;; Only load the argument theme, when `custom-enabled-themes'
   ;; does not contain it.
-  
+
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
@@ -110,11 +110,11 @@
                   (nth 3 tomorrow)
                 (nth 3 now)))
          (month (if is-earlier
-                    (nth 4 now)
-                  (nth 4 tomorrow)))
+                    (nth 4 tomorrow)
+                  (nth 4 now)))
          (year (if is-earlier
-                   (nth 5 now)
-                 (nth 5 tomorrow))))
+                   (nth 5 tomorrow)
+                 (nth 5 now))))
     (encode-time 0 min hour day month year nil -1 nil)))
 
 (defun circadian-themes-parse ()
@@ -233,11 +233,11 @@ or set calendar-longitude:
   (cond ((equal nil calendar-latitude)
          (progn
            nil))
-        
+
         ((equal nil calendar-longitude)
          (progn
            nil))
-        
+
         (t)))
 
 (defun circadian-sunrise ()

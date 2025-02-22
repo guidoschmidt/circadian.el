@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <git@guidoschmidt.cc>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 1.0.0
+;; Version: 1.0.1
 ;; Keywords: themes
 ;; Package-Requires: ((emacs "27.2"))
 
@@ -74,7 +74,7 @@
   "Clear previous `custom-enabled-themes' and load THEME."
   ;; Only load the argument theme, when `custom-enabled-themes'
   ;; does not contain it.
-  
+
   (condition-case nil
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
@@ -110,11 +110,11 @@
                   (nth 3 tomorrow)
                 (nth 3 now)))
          (month (if is-earlier
-                    (nth 4 now)
-                  (nth 4 tomorrow)))
+                    (nth 4 tomorrow)
+                  (nth 4 now)))
          (year (if is-earlier
-                   (nth 5 now)
-                 (nth 5 tomorrow))))
+                   (nth 5 tomorrow)
+                 (nth 5 now))))
     (encode-time 0 min hour day month year nil -1 nil)))
 
 (defun circadian-themes-parse ()
@@ -161,14 +161,17 @@ set and  and sort the final list by time."
          (entry (car (last (or past-themes themes))))
          (theme-or-theme-list (cdr entry))
          (theme (if (listp theme-or-theme-list)
-                    (progn
-                      (nth (random (length theme-or-theme-list)) theme-or-theme-list))
+                    ;; Remove already enabled themes to randomly select the next theme
+                    ;; and avoid re-enabling an already active theme.
+                    (let* ((possible-theme-list (cl-remove-if (lambda (entry)
+                                                                (custom-theme-enabled-p entry))
+                                                              theme-or-theme-list)))
+                      (nth (random (length possible-theme-list)) possible-theme-list))
                   theme-or-theme-list)))
     (circadian-enable-theme theme)))
 
 (defun circadian-schedule()
   "Schedule the next timer for circadian."
-  (random (format-time-string "%H:%M" (decode-time)))
   (let* ((themes (circadian-themes-parse))
          (now (circadian-now-time))
          (past-themes (circadian-filter-inactivate-themes themes now))
@@ -230,11 +233,11 @@ or set calendar-longitude:
   (cond ((equal nil calendar-latitude)
          (progn
            nil))
-        
+
         ((equal nil calendar-longitude)
          (progn
            nil))
-        
+
         (t)))
 
 (defun circadian-sunrise ()

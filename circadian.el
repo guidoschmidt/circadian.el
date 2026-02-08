@@ -5,7 +5,7 @@
 ;; Author: Guido Schmidt
 ;; Maintainer: Guido Schmidt <git@guidoschmidt.cc>
 ;; URL: https://github.com/GuidoSchmidt/circadian
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Keywords: themes
 ;; Package-Requires: ((emacs "27.2"))
 
@@ -284,6 +284,10 @@ or set calendar-longitude:
 (defun circadian-setup ()
   "Setup circadian based on `circadian-themes'."
   (interactive)
+  ;; reset `circadian-next-timer' to avoid collisions with existing timers.
+  (if (not (eq nil circadian-next-timer))
+      (cancel-timer circadian-next-timer))
+  (setq circadian-next-timer nil)
   (circadian-activate-current)
   (circadian-schedule))
 

@@ -193,7 +193,7 @@ set and  and sort the final list by time."
                      (run-at-time
                       next-time
                       nil
-                      #'circadian-enable-theme next-theme))
+                      #'circadian-activate-current))
                (if circadian-verbose
                    (message "[circadian.el] → Next theme %s @ %s"
                             (if (listp next-theme)

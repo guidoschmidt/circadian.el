@@ -115,7 +115,10 @@
          (year (if is-earlier
                    (nth 5 tomorrow)
                  (nth 5 now))))
-    (encode-time 0 min hour day month year nil -1 nil)))
+    ;; `run-at-time' reads a plain number as a delay rather than as a moment,
+    ;; so the timestamp has to keep list form.  `encode-time' returns an
+    ;; integer whenever `current-time-list' is nil, its default since Emacs 32.
+    (time-convert (encode-time 0 min hour day month year nil -1 nil) 'list)))
 
 (defun circadian-themes-parse ()
   "Parse `circadian-themes', filter the list and sort it by time.

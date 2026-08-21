@@ -154,6 +154,20 @@ B should be earlier than A
 
 
 
+(ert-deftest test-circadian-encode-time-is-absolute ()
+  "Test that `circadian-encode-time' yields a moment rather than a delay.
+`run-at-time' tells the two apart by type and reads a plain number as a
+delay, so a timestamp handed over as a number schedules the switch
+decades out instead of at the requested hour."
+  (let ((moment (circadian-encode-time 19 30)))
+    (should-not (numberp moment))
+    (let ((timer (run-at-time moment nil #'ignore)))
+      (unwind-protect
+          (should (time-equal-p moment (timer--time timer)))
+        (cancel-timer timer)))))
+
+
+
 (ert-deftest test-circadian-setup-benchmark ()
   "Benchmark (circadian-setup)."
   (setq calendar-latitude 49)
@@ -183,6 +197,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
                      test-circadian-setup
                      test-circadian-sunrise-sunset
                      test-circadian-time-comparisons
+                     test-circadian-encode-time-is-absolute
                      test-circadian-setup-benchmark
                      test-circadian-invalid-solar-sunrise-sunset
                      test-circadian-sunrise-sunset-timezones))

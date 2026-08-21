@@ -84,6 +84,28 @@
 
 
 
+(ert-deftest test-circadian-reschedule-when-theme-already-enabled ()
+  "Test that `circadian-enable-theme' re-arms on the already-enabled path.
+`circadian-schedule' arms a timer only while `circadian-next-timer' is
+nil.  Reaching a due theme by another route leaves it already enabled, and
+holding on to the spent timer there stops every later switch."
+  (setq circadian-themes '(("7:30"  . tango)
+                           ("19:30" . wombat)))
+  (circadian-stop)
+  (unwind-protect
+      (with-mock
+       (stub circadian-now-time => '(8 0 0))
+       (circadian-setup)
+       (should (memq 'tango custom-enabled-themes))
+       (let ((spent circadian-next-timer))
+         (should spent)
+         (circadian-enable-theme 'tango)
+         (should circadian-next-timer)
+         (should-not (eq spent circadian-next-timer))))
+    (circadian-stop)))
+
+
+
 (ert-deftest test-circadian-sunrise-sunset ()
   "Test :sunrise and :sunset keywords for theme switching.
 @TODO currently failing, needs a fix"
@@ -181,6 +203,7 @@ https://github.com/guidoschmidt/circadian.el/issues/27"
 (defvar test-order '(member
                      test-circadian-filter-and-activate-themes
                      test-circadian-setup
+                     test-circadian-reschedule-when-theme-already-enabled
                      test-circadian-sunrise-sunset
                      test-circadian-time-comparisons
                      test-circadian-setup-benchmark

@@ -79,13 +79,17 @@
       (progn
         (run-hook-with-args 'circadian-before-load-theme-hook theme)
 
+        ;; Release the timer on both branches below: `circadian-schedule'
+        ;; arms a replacement only while `circadian-next-timer' is nil, so
+        ;; a spent timer left in there stops every later switch.
+        (if (not (equal nil circadian-next-timer))
+            (cancel-timer circadian-next-timer))
+        (setq circadian-next-timer nil)
+
         (if (equal nil (member theme custom-enabled-themes))
             (progn
               (mapc #'disable-theme custom-enabled-themes)
               (load-theme theme t)
-              (if (not (equal nil circadian-next-timer))
-                  (cancel-timer circadian-next-timer))
-              (setq circadian-next-timer nil)
               (if circadian-verbose
                   (message "[circadian.el] → Enabled %s theme @ %s"
                            theme

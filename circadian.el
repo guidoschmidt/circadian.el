@@ -45,7 +45,7 @@
 (require 'solar)
 
 (defcustom circadian-verbose nil
-  "Timer to execute on next theme switch."
+  "Verbose message log."
   :type 'boolean
   :group 'circadian)
 
@@ -191,7 +191,7 @@ set and  and sort the final list by time."
     (if (equal nil circadian-next-timer)
         (progn (setq circadian-next-timer
                      (run-at-time
-                      next-time
+                      (seconds-to-time next-time)
                       nil
                       #'circadian-enable-theme next-theme))
                (if circadian-verbose
